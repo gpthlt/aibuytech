@@ -1,0 +1,419 @@
+{
+  "info": {
+    "name": "AIBUYTECH.VN API - Complete",
+    "description": "Complete API collection with Cart, Orders, and Payments",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"Test@123\",\n  \"name\": \"Test User\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/register",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.success && response.data.accessToken) {",
+                  "    pm.environment.set('ACCESS_TOKEN', response.data.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user1@test.com\",\n  \"password\": \"User@123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/refresh",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}"}
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/auth/logout",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Products",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/products?page=1&limit=10",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "products"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/products?q=iphone",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "products"],
+              "query": [{"key": "q", "value": "iphone"}]
+            }
+          }
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/products/{{PRODUCT_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "products", "{{PRODUCT_ID}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Cart",
+      "item": [
+        {
+          "name": "Get Cart",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}"}
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/cart",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "cart"]
+            }
+          }
+        },
+        {
+          "name": "Add to Cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{PRODUCT_ID}}\",\n  \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/cart",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "cart"]
+            }
+          }
+        },
+        {
+          "name": "Update Cart Item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"{{PRODUCT_ID}}\",\n  \"quantity\": 3\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/cart",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "cart"]
+            }
+          }
+        },
+        {
+          "name": "Remove from Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}"}
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/cart/{{PRODUCT_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "cart", "{{PRODUCT_ID}}"]
+            }
+          }
+        },
+        {
+          "name": "Clear Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}"}
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/cart/clear/all",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "cart", "clear", "all"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Orders",
+      "item": [
+        {
+          "name": "Create Order (COD)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.success && response.data._id) {",
+                  "    pm.environment.set('ORDER_ID', response.data._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shippingAddress\": {\n    \"street\": \"123 Nguyen Hue Street\",\n    \"city\": \"Ho Chi Minh City\",\n    \"state\": \"Ho Chi Minh\",\n    \"zipCode\": \"700000\",\n    \"country\": \"Vietnam\"\n  },\n  \"paymentMethod\": \"cod\",\n  \"note\": \"Giao giờ hành chính\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/orders",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Create Order (MoMo)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shippingAddress\": {\n    \"street\": \"456 Le Loi Street\",\n    \"city\": \"Hanoi\",\n    \"state\": \"Hanoi\",\n    \"zipCode\": \"100000\",\n    \"country\": \"Vietnam\"\n  },\n  \"paymentMethod\": \"momo\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/orders",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Get All Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}"}
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/orders?page=1&limit=10",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "orders"],
+              "query": [
+                {"key": "page", "value": "1"},
+                {"key": "limit", "value": "10"}
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}"}
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/orders/{{ORDER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "orders", "{{ORDER_ID}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Order Status (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{ADMIN_TOKEN}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"processing\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/orders/{{ORDER_ID}}/status",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "orders", "{{ORDER_ID}}", "status"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}"}
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/orders/{{ORDER_ID}}/cancel",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "orders", "{{ORDER_ID}}", "cancel"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Payments",
+      "item": [
+        {
+          "name": "Create Payment Intent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{ORDER_ID}}\",\n  \"paymentMethod\": \"momo\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/payments/intent",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "payments", "intent"]
+            }
+          }
+        },
+        {
+          "name": "Get Payment Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}"}
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/payments/status/{{ORDER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "payments", "status", "{{ORDER_ID}}"]
+            }
+          }
+        },
+        {
+          "name": "Simulate Payment Success",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{ACCESS_TOKEN}}"}
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/payments/simulate/{{ORDER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "payments", "simulate", "{{ORDER_ID}}"]
+            }
+          }
+        },
+        {
+          "name": "Payment Webhook (Mock)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{ORDER_ID}}\",\n  \"status\": \"success\",\n  \"transactionId\": \"TXN123456789\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/payments/webhook",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "payments", "webhook"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{BASE_URL}}/api/v1/health",
+          "host": ["{{BASE_URL}}"],
+          "path": ["api", "v1", "health"]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "id": "aibuytech-env",
+  "name": "AIBUYTECH Environment",
+  "values": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:8000",
+      "enabled": true
+    },
+    {
+      "key": "ACCESS_TOKEN",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "PRODUCT_ID",
+      "value": "",
+      "enabled": true
+    },
+    {
+      "key": "CATEGORY_ID",
+      "value": "",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment"
+}
