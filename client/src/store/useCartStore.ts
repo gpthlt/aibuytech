@@ -29,35 +29,33 @@ export const useCartStore = create<CartState>((set, get) => ({
     set((state) => {
       const existingItem = state.items.find((i) => i.product.id === item.product.id);
       if (existingItem) {
+        // Item already exists, just update quantity (itemCount stays same)
         return {
           items: state.items.map((i) =>
             i.product.id === item.product.id ? { ...i, quantity: i.quantity + item.quantity } : i
           ),
-          itemCount: state.itemCount + item.quantity,
+          itemCount: state.itemCount, // No change in item count
         };
       }
+      // New item, increment itemCount by 1
       return {
         items: [...state.items, item],
-        itemCount: state.itemCount + item.quantity,
+        itemCount: state.itemCount + 1,
       };
     }),
   removeItem: (productId) =>
     set((state) => {
-      const item = state.items.find((i) => i.product.id === productId);
+      const itemExists = state.items.some((i) => i.product.id === productId);
       return {
         items: state.items.filter((i) => i.product.id !== productId),
-        itemCount: state.itemCount - (item?.quantity || 0),
+        itemCount: itemExists ? state.itemCount - 1 : state.itemCount,
       };
     }),
   updateQuantity: (productId, quantity) =>
-    set((state) => {
-      const item = state.items.find((i) => i.product.id === productId);
-      const diff = quantity - (item?.quantity || 0);
-      return {
-        items: state.items.map((i) => (i.product.id === productId ? { ...i, quantity } : i)),
-        itemCount: state.itemCount + diff,
-      };
-    }),
+    set((state) => ({
+      items: state.items.map((i) => (i.product.id === productId ? { ...i, quantity } : i)),
+      // itemCount doesn't change when updating quantity of existing item
+    })),
   clearCart: () => set({ items: [], itemCount: 0 }),
   getTotalAmount: () => {
     const { items } = get();
@@ -68,10 +66,8 @@ export const useCartStore = create<CartState>((set, get) => ({
       const { data } = await api.get('/api/v1/cart');
       const cart = data.data;
       if (cart && cart.items) {
-        const itemCount = cart.items.reduce(
-          (sum: number, item: any) => sum + item.quantity,
-          0
-        );
+        // Count number of unique items (product types), not total quantity
+        const itemCount = cart.items.length;
         set({ itemCount });
       }
     } catch (error) {

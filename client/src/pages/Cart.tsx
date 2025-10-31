@@ -11,6 +11,7 @@ interface CartItem {
     name: string;
     price: number;
     imageUrl?: string;
+    images?: string[];
     stock: number;
   };
   quantity: number;
@@ -19,14 +20,34 @@ interface CartItem {
 
 interface Cart {
   items: CartItem[];
-  totalAmount: number;
 }
 
 function Cart() {
   const navigate = useNavigate();
-  const { itemCount, fetchCart } = useCartStore();
-  const [cart, setCart] = useState<Cart>({ items: [], totalAmount: 0 });
+  const { fetchCart } = useCartStore();
+  const [cart, setCart] = useState<Cart>({ items: [] });
   const [loading, setLoading] = useState(true);
+
+  // Get product image URL
+  const getProductImage = (product: CartItem['product']) => {
+    if (product.images && product.images.length > 0) {
+      return `http://localhost:8000${product.images[0]}`;
+    }
+    if (product.imageUrl) {
+      return `http://localhost:8000${product.imageUrl}`;
+    }
+    return '/placeholder.png';
+  };
+
+  // Calculate total amount from items
+  const calculateTotal = (items: CartItem[]) => {
+    return items.reduce((total, item) => {
+      if (!item.product) return total;
+      return total + (item.price * item.quantity);
+    }, 0);
+  };
+
+  const totalAmount = calculateTotal(cart.items);
 
   useEffect(() => {
     loadCart();
@@ -73,7 +94,7 @@ function Cart() {
 
     try {
       await api.delete('/api/v1/cart/clear/all');
-      setCart({ items: [], totalAmount: 0 });
+      setCart({ items: [] });
       fetchCart();
       toast.success('Cart cleared');
     } catch (error: any) {
@@ -125,10 +146,16 @@ function Cart() {
 
         <div className="cart-content">
           <div className="cart-items">
-            {cart.items.map((item) => (
+            {cart.items.map((item) => {
+              // Skip items with null/undefined product (deleted products)
+              if (!item.product) {
+                return null;
+              }
+              
+              return (
               <div key={item.product._id} className="cart-item">
                 <img 
-                  src={item.product.imageUrl || '/placeholder.png'} 
+                  src={getProductImage(item.product)} 
                   alt={item.product.name} 
                   className="cart-item-image" 
                 />
@@ -167,14 +194,15 @@ function Cart() {
                   </p>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="order-summary">
             <h2 className="summary-title">Order Summary</h2>
             <div className="summary-row">
               <span className="label">Subtotal ({cart.items.length} items)</span>
-              <span className="value">{cart.totalAmount.toLocaleString('vi-VN')} ₫</span>
+              <span className="value">{totalAmount.toLocaleString('vi-VN')} ₫</span>
             </div>
             <div className="summary-row">
               <span className="label">Shipping</span>
@@ -182,12 +210,12 @@ function Cart() {
             </div>
             <div className="summary-row">
               <span className="label">Tax (10%)</span>
-              <span className="value">{(cart.totalAmount * 0.1).toLocaleString('vi-VN')} ₫</span>
+              <span className="value">{(totalAmount * 0.1).toLocaleString('vi-VN')} ₫</span>
             </div>
             <div className="summary-row total">
               <span className="label">Total</span>
               <span className="value">
-                {(cart.totalAmount + 30000 + cart.totalAmount * 0.1).toLocaleString('vi-VN')} ₫
+                {(totalAmount + 30000 + totalAmount * 0.1).toLocaleString('vi-VN')} ₫
               </span>
             </div>
             <div className="summary-actions">

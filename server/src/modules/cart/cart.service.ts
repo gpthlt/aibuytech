@@ -11,7 +11,7 @@ export class CartService {
   async getCart(userId: string): Promise<ICart | null> {
     const cart = await Cart.findOne({ user: userId }).populate({
       path: 'items.product',
-      select: 'name price images stock',
+      select: 'name price imageUrl images stock',
     });
 
     return cart;
@@ -77,7 +77,7 @@ export class CartService {
 
     return cart.populate({
       path: 'items.product',
-      select: 'name price images stock',
+      select: 'name price imageUrl images stock',
     });
   }
 
@@ -129,7 +129,7 @@ export class CartService {
 
     return cart.populate({
       path: 'items.product',
-      select: 'name price images stock',
+      select: 'name price imageUrl images stock',
     });
   }
 
@@ -150,7 +150,7 @@ export class CartService {
 
     return cart.populate({
       path: 'items.product',
-      select: 'name price images stock',
+      select: 'name price imageUrl images stock',
     });
   }
 
