@@ -43,7 +43,6 @@ export class CartService {
       cart = new Cart({
         user: userId,
         items: [],
-        totalAmount: 0,
       });
     }
 
@@ -74,8 +73,6 @@ export class CartService {
       });
     }
 
-    // Recalculate total
-    await this.recalculateCart(cart);
     await cart.save();
 
     return cart.populate({
@@ -128,8 +125,6 @@ export class CartService {
       cart.items[itemIndex].price = product.price;
     }
 
-    // Recalculate total
-    await this.recalculateCart(cart);
     await cart.save();
 
     return cart.populate({
@@ -151,8 +146,6 @@ export class CartService {
       (item) => item.product.toString() !== productId
     );
 
-    // Recalculate total
-    await this.recalculateCart(cart);
     await cart.save();
 
     return cart.populate({
@@ -167,17 +160,8 @@ export class CartService {
   async clearCart(userId: string): Promise<void> {
     await Cart.findOneAndUpdate(
       { user: userId },
-      { items: [], totalAmount: 0 }
+      { items: [] }
     );
-  }
-
-  /**
-   * Recalculate cart total
-   */
-  private async recalculateCart(cart: ICart): Promise<void> {
-    cart.totalAmount = cart.items.reduce((total, item) => {
-      return total + item.price * item.quantity;
-    }, 0);
   }
 }
 

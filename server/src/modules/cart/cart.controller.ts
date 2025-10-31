@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { AuthRequest } from '../../middlewares/auth';
 import cartService from './cart.service';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { AddToCartDto, UpdateCartItemDto } from './cart.dto';
@@ -7,8 +8,8 @@ export class CartController {
   /**
    * Get user's cart
    */
-  async getCart(req: Request, res: Response): Promise<void> {
-    const userId = req.user!.id;
+  async getCart(req: AuthRequest, res: Response): Promise<void> {
+    const userId = req.user!.userId;
 
     const cart = await cartService.getCart(userId);
 
@@ -18,8 +19,8 @@ export class CartController {
   /**
    * Add item to cart
    */
-  async addToCart(req: Request, res: Response): Promise<void> {
-    const userId = req.user!.id;
+  async addToCart(req: AuthRequest, res: Response): Promise<void> {
+    const userId = req.user!.userId;
     const data: AddToCartDto = req.body;
 
     const cart = await cartService.addToCart(userId, data);
@@ -30,8 +31,8 @@ export class CartController {
   /**
    * Update cart item
    */
-  async updateCartItem(req: Request, res: Response): Promise<void> {
-    const userId = req.user!.id;
+  async updateCartItem(req: AuthRequest, res: Response): Promise<void> {
+    const userId = req.user!.userId;
     const data: UpdateCartItemDto = req.body;
 
     const cart = await cartService.updateCartItem(userId, data);
@@ -42,8 +43,8 @@ export class CartController {
   /**
    * Remove item from cart
    */
-  async removeFromCart(req: Request, res: Response): Promise<void> {
-    const userId = req.user!.id;
+  async removeFromCart(req: AuthRequest, res: Response): Promise<void> {
+    const userId = req.user!.userId;
     const { productId } = req.params;
 
     const cart = await cartService.removeFromCart(userId, productId);
@@ -54,8 +55,8 @@ export class CartController {
   /**
    * Clear cart
    */
-  async clearCart(req: Request, res: Response): Promise<void> {
-    const userId = req.user!.id;
+  async clearCart(req: AuthRequest, res: Response): Promise<void> {
+    const userId = req.user!.userId;
 
     await cartService.clearCart(userId);
 
