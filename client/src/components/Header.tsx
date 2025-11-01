@@ -53,7 +53,9 @@ function Header() {
           <div className="header-actions">
             {isAuthenticated ? (
               <div className="user-menu">
-                <span className="user-name">👋 {user?.name}</span>
+                <Link to="/profile" className="user-name">
+                  � {user?.name}
+                </Link>
                 <button onClick={handleLogout} className="btn btn-outline">
                   Đăng xuất
                 </button>

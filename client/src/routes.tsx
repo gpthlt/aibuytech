@@ -7,6 +7,7 @@ import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
+import Profile from './pages/Profile';
 import Dashboard from './pages/Admin/Dashboard';
 import ManageUsers from './pages/Admin/ManageUsers';
 import ManageOrders from './pages/Admin/ManageOrders';
@@ -54,6 +55,14 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <Orders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
             </ProtectedRoute>
           }
         />

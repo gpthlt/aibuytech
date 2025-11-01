@@ -22,6 +22,7 @@ import cartRoutes from './modules/cart/cart.routes.js';
 import ordersRoutes from './modules/orders/orders.routes.js';
 import paymentsRoutes from './modules/payments/payments.routes.js';
 import adminRoutes from './modules/admin/admin.routes.js';
+import profileRoutes from './modules/profile/profile.routes.js';
 
 const app: Application = express();
 
@@ -90,6 +91,7 @@ app.use('/api/v1/cart', cartRoutes);
 app.use('/api/v1/orders', ordersRoutes);
 app.use('/api/v1/payments', paymentsRoutes);
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/profile', profileRoutes);
 
 // Error handlers
 app.use(notFoundHandler);
