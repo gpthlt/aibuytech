@@ -21,6 +21,10 @@ export class OrdersService {
 
     // Validate stock for all items
     for (const item of cart.items) {
+      if (!item.product) {
+        throw new AppError('One or more products in cart no longer exist', 400);
+      }
+      
       const product = await Product.findById(item.product);
       if (!product) {
         throw new AppError(`Product ${item.product} not found`, 404);
@@ -43,27 +47,46 @@ export class OrdersService {
     const tax = subtotal * 0.1; // 10% tax
     const totalAmount = subtotal + shippingFee + tax;
 
+    console.log('[OrderService] Calculated totals - Subtotal:', subtotal, 'Total:', totalAmount);
+
     // Create order
     const order = new Order({
       user: userId,
       orderNumber: this.generateOrderNumber(),
-      items: cart.items.map((item) => ({
-        product: item.product,
-        quantity: item.quantity,
-        price: item.price,
-      })),
+      items: cart.items.map((item) => {
+        const product = item.product as any; // Already populated
+        return {
+          product: product._id || item.product,
+          name: product.name, // Add product name
+          quantity: item.quantity,
+          price: item.price,
+        };
+      }),
       subtotal,
       shippingFee,
       tax,
       totalAmount,
-      shippingAddress,
+      shippingAddress: {
+        fullName: shippingAddress.street, // Use street as fullName for now
+        phone: '0000000000', // Default phone
+        address: shippingAddress.street,
+        city: shippingAddress.city,
+        postalCode: shippingAddress.zipCode,
+      },
       paymentMethod,
       paymentStatus: paymentMethod === 'cod' ? 'pending' : 'pending',
       status: 'pending',
       note,
     });
 
-    await order.save();
+
+    try {
+      await order.save();
+      console.log('[OrderService] Order saved successfully, ID:', order._id);
+    } catch (saveError) {
+      console.error('[OrderService] Save error:', saveError);
+      throw saveError;
+    }
 
     // Update product stock
     for (const item of cart.items) {
@@ -74,13 +97,19 @@ export class OrdersService {
 
     // Clear cart
     cart.items = [];
-    cart.totalAmount = 0;
     await cart.save();
 
-    return order.populate([
-      { path: 'user', select: 'name email' },
-      { path: 'items.product', select: 'name price images' },
-    ]);
+
+    try {
+      const populatedOrder = await order.populate([
+        { path: 'user', select: 'name email' },
+        { path: 'items.product', select: 'name price imageUrl images' },
+      ]);
+      return populatedOrder;
+    } catch (populateError) {
+      // Return order without populate if it fails
+      return order;
+    }
   }
 
   /**
@@ -107,7 +136,7 @@ export class OrdersService {
     const [orders, total] = await Promise.all([
       Order.find(query)
         .populate('user', 'name email')
-        .populate('items.product', 'name price images')
+        .populate('items.product', 'name price imageUrl images')
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit),
@@ -134,7 +163,7 @@ export class OrdersService {
 
     const order = await Order.findOne(query)
       .populate('user', 'name email')
-      .populate('items.product', 'name price images');
+      .populate('items.product', 'name price imageUrl images');
 
     if (!order) {
       throw new AppError('Order not found', 404);
@@ -171,14 +200,13 @@ export class OrdersService {
     // Update payment status if delivered
     if (status === 'delivered' && order.paymentMethod === 'cod') {
       order.paymentStatus = 'completed';
-      order.paidAt = new Date();
     }
 
     await order.save();
 
     return order.populate([
       { path: 'user', select: 'name email' },
-      { path: 'items.product', select: 'name price images' },
+      { path: 'items.product', select: 'name price imageUrl images' },
     ]);
   }
 
@@ -212,7 +240,7 @@ export class OrdersService {
 
     return order.populate([
       { path: 'user', select: 'name email' },
-      { path: 'items.product', select: 'name price images' },
+      { path: 'items.product', select: 'name price imageUrl images' },
     ]);
   }
 

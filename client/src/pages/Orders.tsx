@@ -11,6 +11,7 @@ interface Order {
     product: {
       name: string;
       imageUrl?: string;
+      images?: string[];
     };
     quantity: number;
     price: number;
@@ -26,6 +27,17 @@ function Orders() {
   const navigate = useNavigate();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Get product image URL
+  const getProductImage = (product: { imageUrl?: string; images?: string[] }) => {
+    if (product.images && product.images.length > 0) {
+      return `http://localhost:8000${product.images[0]}`;
+    }
+    if (product.imageUrl) {
+      return `http://localhost:8000${product.imageUrl}`;
+    }
+    return '/placeholder.png';
+  };
 
   useEffect(() => {
     loadOrders();
@@ -136,9 +148,9 @@ function Orders() {
                   <span className={`status-badge status-${order.status}`}>
                     {order.status.toUpperCase()}
                   </span>
-                  <span className={`status-badge payment-${order.paymentStatus}`}>
+                  {/* <span className={`status-badge payment-${order.paymentStatus}`}>
                     {order.paymentStatus.toUpperCase()}
-                  </span>
+                  </span> */}
                   <span className="payment-method">
                     {order.paymentMethod.toUpperCase()}
                   </span>
@@ -150,7 +162,7 @@ function Orders() {
                 {order.items.map((item, idx) => (
                   <div key={idx} className="order-item">
                     <img
-                      src={item.product.imageUrl || '/placeholder.png'}
+                      src={getProductImage(item.product)}
                       alt={item.product.name}
                       className="order-item-image"
                     />
