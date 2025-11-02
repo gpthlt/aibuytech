@@ -1,14 +1,15 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import paymentsService from './payments.service';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { CreatePaymentIntentDto, WebhookDto } from './payments.dto';
+import { AuthRequest } from '../../middlewares/auth';
 
 export class PaymentsController {
   /**
    * Create payment intent
    */
-  async createPaymentIntent(req: Request, res: Response): Promise<void> {
-    const userId = req.user!.id;
+  async createPaymentIntent(req: AuthRequest, res: Response): Promise<void> {
+    const userId = req.user!.userId;
     const data: CreatePaymentIntentDto = req.body;
 
     const paymentIntent = await paymentsService.createPaymentIntent(
@@ -24,7 +25,7 @@ export class PaymentsController {
   /**
    * Handle payment webhook
    */
-  async handleWebhook(req: Request, res: Response): Promise<void> {
+  async handleWebhook(req: AuthRequest, res: Response): Promise<void> {
     const data: WebhookDto = req.body;
 
     const result = await paymentsService.handleWebhook(data);
@@ -37,8 +38,8 @@ export class PaymentsController {
   /**
    * Get payment status
    */
-  async getPaymentStatus(req: Request, res: Response): Promise<void> {
-    const userId = req.user!.id;
+  async getPaymentStatus(req: AuthRequest, res: Response): Promise<void> {
+    const userId = req.user!.userId;
     const { orderId } = req.params;
 
     const status = await paymentsService.getPaymentStatus(orderId, userId);
@@ -51,8 +52,8 @@ export class PaymentsController {
   /**
    * Simulate payment success (for testing)
    */
-  async simulatePaymentSuccess(req: Request, res: Response): Promise<void> {
-    const userId = req.user!.id;
+  async simulatePaymentSuccess(req: AuthRequest, res: Response): Promise<void> {
+    const userId = req.user!.userId;
     const { orderId } = req.params;
 
     const result = await paymentsService.simulatePaymentSuccess(

@@ -16,6 +16,8 @@ export class AuthService {
       email: data.email,
       password: hashedPassword,
       name: data.name,
+      phone: data.phone,
+      address: data.address,
     });
 
     const payload: TokenPayload = {

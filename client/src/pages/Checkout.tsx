@@ -8,6 +8,8 @@ function Checkout() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    fullName: '',
+    phone: '',
     street: '',
     city: '',
     state: '',
@@ -21,18 +23,22 @@ function Checkout() {
     e.preventDefault();
     setLoading(true);
 
+    const requestBody = {
+      shippingAddress: {
+        street: formData.street,
+        city: formData.city,
+        state: formData.state,
+        zipCode: formData.zipCode,
+        country: formData.country,
+      },
+      paymentMethod: formData.paymentMethod,
+      note: formData.note,
+    };
+
+    console.log('Creating order with data:', requestBody);
+
     try {
-      const { data } = await api.post('/api/v1/orders', {
-        shippingAddress: {
-          street: formData.street,
-          city: formData.city,
-          state: formData.state,
-          zipCode: formData.zipCode,
-          country: formData.country,
-        },
-        paymentMethod: formData.paymentMethod,
-        note: formData.note,
-      });
+      const { data } = await api.post('/api/v1/orders', requestBody);
 
       toast.success('Order placed successfully!');
       
@@ -44,7 +50,10 @@ function Checkout() {
       }
     } catch (error: any) {
       console.error('Checkout error:', error);
-      toast.error(error.response?.data?.message || 'Failed to place order');
+      console.error('Error response:', error.response?.data);
+      console.error('Error details:', error.response?.data?.error);
+      console.error('Error status:', error.response?.status);
+      toast.error(error.response?.data?.error?.message || error.response?.data?.message || 'Failed to place order');
     } finally {
       setLoading(false);
     }
@@ -61,6 +70,34 @@ function Checkout() {
             <h2 className="section-title">
               Shipping Address
             </h2>
+
+            <div className="form-group">
+              <label className="form-label">
+                Full Name <span className="required">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.fullName}
+                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                className="form-input"
+                placeholder="Enter your full name..."
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">
+                Phone Number <span className="required">*</span>
+              </label>
+              <input
+                type="tel"
+                required
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                className="form-input"
+                placeholder="Enter your phone number..."
+              />
+            </div>
 
             <div className="form-group">
               <label className="form-label">

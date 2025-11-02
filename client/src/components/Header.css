@@ -140,6 +140,15 @@
 .user-name {
   font-weight: 500;
   color: #4a5568;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.user-name:hover {
+  background: #f7fafc;
+  color: #667eea;
 }
 
 @media (max-width: 768px) {

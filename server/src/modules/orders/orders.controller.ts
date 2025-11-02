@@ -1,14 +1,15 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import ordersService from './orders.service';
 import { ApiResponse } from '../../utils/ApiResponse';
 import { CreateOrderDto, UpdateOrderStatusDto } from './orders.dto';
+import { AuthRequest } from '../../middlewares/auth';
 
 export class OrdersController {
   /**
    * Create order from cart
    */
-  async createOrder(req: Request, res: Response): Promise<void> {
-    const userId = req.user!.id;
+  async createOrder(req: AuthRequest, res: Response): Promise<void> {
+    const userId = req.user!.userId;
     const data: CreateOrderDto = req.body;
 
     const order = await ordersService.createOrder(userId, data);
@@ -19,9 +20,9 @@ export class OrdersController {
   /**
    * Get all orders
    */
-  async getOrders(req: Request, res: Response): Promise<void> {
+  async getOrders(req: AuthRequest, res: Response): Promise<void> {
     const { status, page = '1', limit = '10' } = req.query;
-    const userId = req.user!.role === 'admin' ? undefined : req.user!.id;
+    const userId = req.user!.role === 'admin' ? undefined : req.user!.userId;
 
     const result = await ordersService.getOrders(
       userId,
@@ -36,9 +37,9 @@ export class OrdersController {
   /**
    * Get order by ID
    */
-  async getOrderById(req: Request, res: Response): Promise<void> {
+  async getOrderById(req: AuthRequest, res: Response): Promise<void> {
     const { id } = req.params;
-    const userId = req.user!.role === 'admin' ? undefined : req.user!.id;
+    const userId = req.user!.role === 'admin' ? undefined : req.user!.userId;
 
     const order = await ordersService.getOrderById(id, userId);
 
@@ -48,7 +49,7 @@ export class OrdersController {
   /**
    * Update order status (admin only)
    */
-  async updateOrderStatus(req: Request, res: Response): Promise<void> {
+  async updateOrderStatus(req: AuthRequest, res: Response): Promise<void> {
     const { id } = req.params;
     const data: UpdateOrderStatusDto = req.body;
 
@@ -60,9 +61,9 @@ export class OrdersController {
   /**
    * Cancel order
    */
-  async cancelOrder(req: Request, res: Response): Promise<void> {
+  async cancelOrder(req: AuthRequest, res: Response): Promise<void> {
     const { id } = req.params;
-    const userId = req.user!.id;
+    const userId = req.user!.userId;
 
     const order = await ordersService.cancelOrder(id, userId);
 
