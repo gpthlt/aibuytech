@@ -14,6 +14,8 @@ import {
   updateOrderStatusSchema,
   getOrdersQuerySchema,
   getStatsQuerySchema,
+  getReviewsQuerySchema,
+  deleteReviewSchema,
 } from './admin.dto.js';
 
 const router = Router();
@@ -354,5 +356,72 @@ router.get('/orders', validate(getOrdersQuerySchema), controller.getAllOrders);
  *         description: Order status updated
  */
 router.patch('/orders/:orderId/status', validate(updateOrderStatusSchema), controller.updateOrderStatus);
+
+// ============================================
+// Review Management
+// ============================================
+
+/**
+ * @swagger
+ * /api/v1/admin/reviews:
+ *   get:
+ *     summary: Get all reviews (admin)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: productId
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: rating
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 5
+ *       - in: query
+ *         name: q
+ *         schema:
+ *           type: string
+ *           description: Search by review content
+ *     responses:
+ *       200:
+ *         description: List of reviews
+ */
+router.get('/reviews', validate(getReviewsQuerySchema), controller.getReviews);
+
+/**
+ * @swagger
+ * /api/v1/admin/reviews/{productId}/{reviewId}:
+ *   delete:
+ *     summary: Delete a review (admin)
+ *     tags: [Admin]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: reviewId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Review deleted successfully
+ */
+router.delete('/reviews/:productId/:reviewId', validate(deleteReviewSchema), controller.deleteReview);
 
 export default router;

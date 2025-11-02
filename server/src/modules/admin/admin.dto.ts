@@ -100,6 +100,27 @@ export const getOrdersQuerySchema = z.object({
 });
 
 // ============================================
+// Review Management DTOs
+// ============================================
+
+export const getReviewsQuerySchema = z.object({
+  query: z.object({
+    page: z.coerce.number().min(1).optional().default(1),
+    limit: z.coerce.number().min(1).max(100).optional().default(10),
+    productId: z.string().optional(),
+    rating: z.coerce.number().min(1).max(5).optional(),
+    q: z.string().optional(), // Search by content
+  }),
+});
+
+export const deleteReviewSchema = z.object({
+  params: z.object({
+    productId: z.string().min(1),
+    reviewId: z.string().min(1),
+  }),
+});
+
+// ============================================
 // Statistics DTOs
 // ============================================
 
@@ -118,3 +139,4 @@ export type GetProductsQuery = z.infer<typeof getProductsQuerySchema>['query'];
 export type UpdateOrderStatusBody = z.infer<typeof updateOrderStatusSchema>['body'];
 export type GetOrdersQuery = z.infer<typeof getOrdersQuerySchema>['query'];
 export type GetStatsQuery = z.infer<typeof getStatsQuerySchema>['query'];
+export type GetReviewsQuery = z.infer<typeof getReviewsQuerySchema>['query'];

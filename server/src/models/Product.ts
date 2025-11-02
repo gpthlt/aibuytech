@@ -1,5 +1,15 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 
+export interface IReview {
+  _id: Types.ObjectId;
+  user: Types.ObjectId;
+  rating: number;
+  content: string;
+  isAnonymous: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface IProduct extends Document {
   name: string;
   description: string;
@@ -9,9 +19,42 @@ export interface IProduct extends Document {
   images?: string[]; // New: Array of image paths (max 6)
   stock: number;
   isActive: boolean;
+  reviews: IReview[];
+  averageRating: number;
+  totalReviews: number;
   createdAt: Date;
   updatedAt: Date;
 }
+
+const reviewSchema = new Schema<IReview>(
+  {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    rating: {
+      type: Number,
+      required: true,
+      min: 1,
+      max: 5,
+    },
+    content: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 10,
+      maxlength: 1000,
+    },
+    isAnonymous: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 
 const productSchema = new Schema<IProduct>(
   {
@@ -56,6 +99,21 @@ const productSchema = new Schema<IProduct>(
     isActive: {
       type: Boolean,
       default: true,
+    },
+    reviews: {
+      type: [reviewSchema],
+      default: [],
+    },
+    averageRating: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+    },
+    totalReviews: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
   },
   {

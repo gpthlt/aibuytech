@@ -11,6 +11,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "seed": "tsx src/../scripts/seed.ts",
+    "migrate:reviews": "tsx scripts/migrate-reviews.ts",
     "lint": "eslint src --ext .ts"
   },
   "dependencies": {

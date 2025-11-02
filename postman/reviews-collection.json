@@ -1,0 +1,280 @@
+{
+  "info": {
+    "name": "AIBUYTECH - Product Reviews API",
+    "description": "API endpoints for Product Review feature",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Reviews",
+      "item": [
+        {
+          "name": "Create Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "description": "User must be authenticated and purchased the product"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5,\n  \"content\": \"Great product! Highly recommend it. Works perfectly and delivery was fast.\",\n  \"isAnonymous\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products/:productId/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "products", ":productId", "reviews"],
+              "variable": [
+                {
+                  "key": "productId",
+                  "value": "67890abcdef1234567890abc",
+                  "description": "Product ID"
+                }
+              ]
+            },
+            "description": "Create a new review for a product. User must have purchased and received the product (order status = delivered)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product Reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products/:productId/reviews?page=1&limit=10&sort=-createdAt",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "products", ":productId", "reviews"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Page number"
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Items per page"
+                },
+                {
+                  "key": "sort",
+                  "value": "-createdAt",
+                  "description": "Sort by: createdAt, -createdAt, rating, -rating"
+                }
+              ],
+              "variable": [
+                {
+                  "key": "productId",
+                  "value": "67890abcdef1234567890abc",
+                  "description": "Product ID"
+                }
+              ]
+            },
+            "description": "Get all reviews for a product (public endpoint, no authentication required)."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Own Review",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "description": "Must be review owner"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 4,\n  \"content\": \"Updated review content. Still a good product but found minor issues.\",\n  \"isAnonymous\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products/:productId/reviews/:reviewId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "products", ":productId", "reviews", ":reviewId"],
+              "variable": [
+                {
+                  "key": "productId",
+                  "value": "67890abcdef1234567890abc"
+                },
+                {
+                  "key": "reviewId",
+                  "value": "67890abcdef1234567890def"
+                }
+              ]
+            },
+            "description": "Update your own review. Only the review owner can update."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Review (Owner)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "description": "Must be review owner or admin"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products/:productId/reviews/:reviewId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "products", ":productId", "reviews", ":reviewId"],
+              "variable": [
+                {
+                  "key": "productId",
+                  "value": "67890abcdef1234567890abc"
+                },
+                {
+                  "key": "reviewId",
+                  "value": "67890abcdef1234567890def"
+                }
+              ]
+            },
+            "description": "Delete a review. Can be done by review owner or admin."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product with Rating Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/products/:productId",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "products", ":productId"],
+              "variable": [
+                {
+                  "key": "productId",
+                  "value": "67890abcdef1234567890abc"
+                }
+              ]
+            },
+            "description": "Get product details including averageRating and totalReviews."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Test Scenarios",
+      "item": [
+        {
+          "name": "1. Login as User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Login to get access token. Copy the accessToken from response and set as {{accessToken}} variable."
+          },
+          "response": []
+        },
+        {
+          "name": "2. Create Order (to be able to review)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"product\": \"67890abcdef1234567890abc\",\n      \"quantity\": 1\n    }\n  ],\n  \"shippingAddress\": {\n    \"fullName\": \"Test User\",\n    \"phone\": \"0123456789\",\n    \"address\": \"123 Test St\",\n    \"city\": \"Ho Chi Minh\",\n    \"postalCode\": \"700000\"\n  },\n  \"paymentMethod\": \"cod\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "orders"]
+            },
+            "description": "Create an order first"
+          },
+          "response": []
+        },
+        {
+          "name": "3. Update Order to Delivered (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"delivered\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/admin/orders/:orderId/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "admin", "orders", ":orderId", "status"],
+              "variable": [
+                {
+                  "key": "orderId",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Update order status to delivered (use admin token)"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "adminAccessToken",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

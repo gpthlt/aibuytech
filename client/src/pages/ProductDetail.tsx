@@ -4,6 +4,7 @@ import api from '../lib/api';
 import { useCartStore } from '../store/useCartStore';
 import { useAuthStore } from '../store/useAuthStore';
 import Loading from '../components/Loading';
+import Reviews from '../components/Reviews';
 import toast from 'react-hot-toast';
 import './ProductDetail.css';
 
@@ -221,6 +222,9 @@ function ProductDetail() {
                 </table>
               </div>
             )}
+
+            {/* Reviews Section */}
+            <Reviews productId={product._id} />
           </div>
         </div>
       </div>
