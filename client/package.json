@@ -2,10 +2,12 @@
   "name": "client",
   "version": "1.0.0",
   "type": "module",
+  "packageManager": "pnpm@8.15.0",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "start": "serve dist -s -l 5173",
     "lint": "eslint src --ext .ts,.tsx"
   },
   "dependencies": {
@@ -16,6 +18,7 @@
     "react-hook-form": "^7.49.2",
     "react-hot-toast": "^2.4.1",
     "react-router-dom": "^6.20.1",
+    "serve": "^14.2.1",
     "zod": "^3.22.4",
     "zustand": "^4.4.7"
   },

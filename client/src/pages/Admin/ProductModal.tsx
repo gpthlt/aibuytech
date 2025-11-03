@@ -47,7 +47,7 @@ function ProductModal({ product, onClose, onSuccess }: ProductModalProps) {
     
     // Load existing images as previews
     if (product?.images && product.images.length > 0) {
-      const fullImageUrls = product.images.map(img => `http://localhost:8000${img}`);
+      const fullImageUrls = product.images.map(img => `http://api.aibuytech.store${img}`);
       setExistingImages(product.images); // Store original paths
       setImagePreviews(fullImageUrls); // Display full URLs
     }
@@ -106,7 +106,7 @@ function ProductModal({ product, onClose, onSuccess }: ProductModalProps) {
     const newPreviews = validFiles.map((file) => URL.createObjectURL(file));
     
     // Combine existing images with new previews
-    const existingFullUrls = existingImages.map(img => `http://localhost:8000${img}`);
+    const existingFullUrls = existingImages.map(img => `http://api.aibuytech.store${img}`);
     setImagePreviews([...existingFullUrls, ...newPreviews]);
   };
 

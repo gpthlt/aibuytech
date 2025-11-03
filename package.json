@@ -14,7 +14,8 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "test": "pnpm --filter server test",
     "seed": "pnpm --filter server seed",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "heroku-postbuild": "npm install -g pnpm && pnpm install && pnpm --filter client build && pnpm --filter server build"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",

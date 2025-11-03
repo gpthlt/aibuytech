@@ -27,6 +27,10 @@ import reviewsRoutes from './modules/reviews/reviews.routes.js';
 
 const app: Application = express();
 
+// Trust proxy - Required for deployments behind reverse proxies (Railway, Heroku, etc.)
+// This enables Express to read X-Forwarded-* headers
+app.set('trust proxy', 1);
+
 // Security & Middleware
 app.use(
   helmet({
@@ -54,7 +58,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: 'http://localhost:8000',
+        url: 'http://api.aibuytech.store',
         description: 'Development server',
       },
     ],

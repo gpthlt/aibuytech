@@ -39,15 +39,15 @@ function Footer() {
           <div className="footer-section">
             <h4>Liên hệ</h4>
             <ul className="contact-info">
-              <li>📞 Hotline: 1900-xxxx</li>
-              <li>✉️ Email: support@aibuytech.vn</li>
-              <li>📍 Địa chỉ: 123 Đường ABC, Quận XYZ, TP.HCM</li>
+              <li>📞 Hotline: 0819186413</li>
+              <li>✉️ Email: vuhoangphuc035@gmail.com</li>
+              <li>📍 Địa chỉ: Trường quản trị và kinh doanh, ĐHQGHN</li>
             </ul>
           </div>
         </div>
 
         <div className="footer-bottom">
-          <p>&copy; 2024 AIBUYTECH.VN. All rights reserved.</p>
+          <p>&copy; 2025 AIBUYTECH.VN. All rights reserved.</p>
           <p>Made with ❤️ in Vietnam</p>
         </div>
       </div>

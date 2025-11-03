@@ -13,4 +13,7 @@ export const rateLimitMiddleware = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  // Fix for deployments behind proxies
+  // This tells rate-limit to trust the X-Forwarded-For header
+  validate: { xForwardedForHeader: false },
 });

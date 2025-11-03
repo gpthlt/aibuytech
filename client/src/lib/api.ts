@@ -1,7 +1,10 @@
 import axios from 'axios';
 
+// Use environment variable for API URL, fallback to localhost for development
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://api.aibuytech.store';
+
 const api = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: API_BASE_URL,
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
@@ -34,7 +37,7 @@ api.interceptors.response.use(
 
       try {
         const { data } = await axios.post(
-          'http://localhost:8000/api/v1/auth/refresh',
+          `${API_BASE_URL}/api/v1/auth/refresh`,
           {},
           { withCredentials: true }
         );
