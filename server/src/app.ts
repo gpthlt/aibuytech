@@ -23,6 +23,7 @@ import ordersRoutes from './modules/orders/orders.routes.js';
 import paymentsRoutes from './modules/payments/payments.routes.js';
 import adminRoutes from './modules/admin/admin.routes.js';
 import profileRoutes from './modules/profile/profile.routes.js';
+import reviewsRoutes from './modules/reviews/reviews.routes.js';
 
 const app: Application = express();
 
@@ -74,7 +75,7 @@ const swaggerSpec = swaggerJsdoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Health check
-app.get('/api/v1/health', (req: Request, res: Response) => {
+app.get('/api/v1/health', (_req: Request, res: Response) => {
   res.json({
     success: true,
     data: {
@@ -87,6 +88,7 @@ app.get('/api/v1/health', (req: Request, res: Response) => {
 // API Routes
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/products', productsRoutes);
+app.use('/api/v1/products', reviewsRoutes); // Reviews routes nested under products
 app.use('/api/v1/cart', cartRoutes);
 app.use('/api/v1/orders', ordersRoutes);
 app.use('/api/v1/payments', paymentsRoutes);

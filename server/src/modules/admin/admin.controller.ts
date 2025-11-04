@@ -10,6 +10,7 @@ import type {
   UpdateOrderStatusBody,
   GetOrdersQuery,
   GetStatsQuery,
+  GetReviewsQuery,
 } from './admin.dto.js';
 
 const adminService = new AdminService();
@@ -171,6 +172,30 @@ export class AdminController {
       const query = req.query as unknown as GetStatsQuery;
       const data = await adminService.getSalesChart(query);
       return ApiResponse.success(res, data);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // ============================================
+  // Review Management
+  // ============================================
+
+  async getReviews(req: Request, res: Response, next: NextFunction) {
+    try {
+      const query = req.query as unknown as GetReviewsQuery;
+      const result = await adminService.getReviews(query);
+      return ApiResponse.success(res, result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteReview(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { productId, reviewId } = req.params;
+      const result = await adminService.deleteReview(productId, reviewId);
+      return ApiResponse.success(res, result);
     } catch (error) {
       next(error);
     }

@@ -13,6 +13,7 @@ import type {
   UpdateOrderStatusBody,
   GetOrdersQuery,
   GetStatsQuery,
+  GetReviewsQuery,
 } from './admin.dto.js';
 
 export class AdminService {
@@ -379,5 +380,97 @@ export class AdminService {
     ]);
 
     return salesData;
+  }
+
+  // ============================================
+  // Review Management
+  // ============================================
+
+  async getReviews(query: GetReviewsQuery) {
+    const { page = 1, limit = 10, productId, rating, q } = query;
+
+    // Build filter for products
+    const productFilter: any = {};
+    if (productId) {
+      productFilter._id = productId;
+    }
+
+    // Find products with reviews
+    const products = await Product.find({
+      ...productFilter,
+      'reviews.0': { $exists: true }, // Has at least one review
+    }).populate('reviews.user', 'fullName email');
+
+    // Flatten reviews from all products
+    const allReviews: any[] = [];
+    products.forEach((product) => {
+      product.reviews.forEach((review: any) => {
+        // Apply filters
+        if (rating && review.rating !== rating) return;
+        if (q && !review.content.toLowerCase().includes(q.toLowerCase())) return;
+
+        allReviews.push({
+          _id: review._id,
+          productId: product._id,
+          productName: product.name,
+          rating: review.rating,
+          content: review.content,
+          isAnonymous: review.isAnonymous,
+          user: review.user,
+          createdAt: review.createdAt,
+          updatedAt: review.updatedAt,
+        });
+      });
+    });
+
+    // Sort by creation date (newest first)
+    allReviews.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    // Paginate
+    const total = allReviews.length;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const items = allReviews.slice(startIndex, endIndex);
+
+    return {
+      items,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNext: endIndex < total,
+        hasPrev: page > 1,
+      },
+    };
+  }
+
+  async deleteReview(productId: string, reviewId: string) {
+    const product = await Product.findById(productId);
+    if (!product) {
+      throw new ApiError(404, 'Product not found');
+    }
+
+    const reviewIndex = product.reviews.findIndex((r: any) => r._id.toString() === reviewId);
+    if (reviewIndex === -1) {
+      throw new ApiError(404, 'Review not found');
+    }
+
+    // Remove review
+    product.reviews.splice(reviewIndex, 1);
+
+    // Recalculate rating
+    if (product.reviews.length > 0) {
+      const totalRating = product.reviews.reduce((sum: number, review: any) => sum + review.rating, 0);
+      product.averageRating = totalRating / product.reviews.length;
+      product.totalReviews = product.reviews.length;
+    } else {
+      product.averageRating = 0;
+      product.totalReviews = 0;
+    }
+
+    await product.save();
+
+    return { message: 'Review deleted successfully' };
   }
 }

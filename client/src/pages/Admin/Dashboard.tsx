@@ -202,6 +202,10 @@ function Dashboard() {
             <span className="action-icon">👤</span>
             Manage Users
           </Link>
+          <Link to="/admin/reviews" className="action-btn">
+            <span className="action-icon">⭐</span>
+            Manage Reviews
+          </Link>
         </div>
       </div>
     </div>
