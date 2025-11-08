@@ -20,7 +20,11 @@ export class ProductsService {
     // Build filter
     const filter: any = {};
     if (query.q) {
-      filter.$text = { $search: query.q };
+      // Use regex for partial text search (case-insensitive)
+      filter.$or = [
+        { name: { $regex: query.q, $options: 'i' } },
+        { description: { $regex: query.q, $options: 'i' } }
+      ];
     }
     if (query.category) {
       filter.category = query.category;

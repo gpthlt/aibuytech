@@ -32,7 +32,7 @@ export const getProductsSchema = z.object({
     category: z.string().optional(),
     minPrice: z.string().optional(),
     maxPrice: z.string().optional(),
-    sort: z.enum(['price', '-price', 'createdAt', '-createdAt']).optional(),
+    sort: z.enum(['price', '-price', 'name', '-name', 'createdAt', '-createdAt']).optional(),
   }),
 });
 

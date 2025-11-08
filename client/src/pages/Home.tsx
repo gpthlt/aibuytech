@@ -43,10 +43,12 @@ function Home() {
       const params = new URLSearchParams({
         page: pagination.page.toString(),
         limit: pagination.limit.toString(),
-        sortBy,
-        sortOrder,
-        ...(searchTerm && { search: searchTerm }),
+        ...(searchTerm && { q: searchTerm }),
       });
+
+      // Backend expects sort format: 'price' or '-price' (prefix - for desc)
+      const sortValue = sortOrder === 'desc' ? `-${sortBy}` : sortBy;
+      params.append('sort', sortValue);
 
       const { data } = await api.get(`/api/v1/products?${params}`);
       setProducts(data.data.data || []);

@@ -31,10 +31,10 @@ function Cart() {
   // Get product image URL
   const getProductImage = (product: CartItem['product']) => {
     if (product.images && product.images.length > 0) {
-      return `http://localhost:8000${product.images[0]}`;
+      return `http://api.aibuytech.store${product.images[0]}`;
     }
     if (product.imageUrl) {
-      return `http://localhost:8000${product.imageUrl}`;
+      return `http://api.aibuytech.store${product.imageUrl}`;
     }
     return '/placeholder.png';
   };

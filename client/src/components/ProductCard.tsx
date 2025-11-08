@@ -27,10 +27,10 @@ function ProductCard({ product }: ProductCardProps) {
   // Get first image from images array or fallback to imageUrl or placeholder
   const getProductImage = () => {
     if (product.images && product.images.length > 0) {
-      return `http://localhost:8000${product.images[0]}`;
+      return `http://api.aibuytech.store${product.images[0]}`;
     }
     if (product.imageUrl) {
-      return `http://localhost:8000${product.imageUrl}`;
+      return `http://api.aibuytech.store${product.imageUrl}`;
     }
     return '/placeholder.jpg';
   };

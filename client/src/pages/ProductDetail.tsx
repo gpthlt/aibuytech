@@ -87,9 +87,9 @@ function ProductDetail() {
   const getProductImages = () => {
     const images: string[] = [];
     if (product?.images && product.images.length > 0) {
-      product.images.forEach(img => images.push(`http://localhost:8000${img}`));
+      product.images.forEach(img => images.push(`http://api.aibuytech.store${img}`));
     } else if (product?.imageUrl) {
-      images.push(`http://localhost:8000${product.imageUrl}`);
+      images.push(`http://api.aibuytech.store${product.imageUrl}`);
     } else {
       images.push('/placeholder.jpg');
     }

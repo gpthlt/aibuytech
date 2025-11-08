@@ -4,9 +4,10 @@
   "description": "AIBUYTECH.VN API Server",
   "type": "module",
   "main": "dist/server.js",
+  "packageManager": "pnpm@8.15.0",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "tsc",
+    "build": "esbuild src/server.ts --bundle --platform=node --format=esm --outfile=dist/server.js --external:express --external:mongoose --external:bcrypt --external:jsonwebtoken --external:dotenv --external:cors --external:helmet --external:cookie-parser --external:express-rate-limit --external:multer --external:uuid --external:winston --external:zod --external:swagger-jsdoc --external:swagger-ui-express",
     "start": "node dist/server.js",
     "test": "vitest run",
     "test:watch": "vitest",

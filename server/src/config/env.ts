@@ -12,6 +12,7 @@ const envSchema = z.object({
   JWT_ACCESS_EXPIRES_IN: z.string().default('15m'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
   CLIENT_URL: z.string().url(),
+  ALLOWED_ORIGINS: z.string().optional(),
   CLOUDINARY_ENABLED: z
     .string()
     .transform((val) => val === 'true')
@@ -37,6 +38,9 @@ export const config = {
     refreshExpiresIn: envVars.JWT_REFRESH_EXPIRES_IN,
   },
   clientUrl: envVars.CLIENT_URL,
+  allowedOrigins: envVars.ALLOWED_ORIGINS 
+    ? envVars.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
+    : [envVars.CLIENT_URL],
   cloudinary: {
     enabled: envVars.CLOUDINARY_ENABLED,
     cloudName: envVars.CLOUDINARY_CLOUD_NAME,
