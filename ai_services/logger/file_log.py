@@ -13,6 +13,9 @@ def get_logger(name: str = "app", log_file: str = "logger/app.log") -> logging.L
     if logger.hasHandlers():
         logger.handlers.clear()
 
+    with open(log_file, "w", encoding="utf-8") as f: 
+        pass 
+
     # File handler
     file_handler = logging.FileHandler(log_file, mode="a", encoding="utf-8")
     file_handler.setLevel(logging.INFO)
