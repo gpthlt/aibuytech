@@ -5,6 +5,7 @@ transformers==4.57.1
 scikit-learn==1.7.2
 torch==2.9.0 --index-url https://download.pytorch.org/whl/cu126
 torchvision==0.24.0
+accelerate==1.11.0
 uvicorn==0.38.0
 python-multipart==0.0.20
 langchain_openai==1.0.2
