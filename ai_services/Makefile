@@ -1,29 +1,16 @@
-SERVICE_HOST=0.0.0.0
-SERVICE_PORT=8003
+COMPOSE_FILE=docker-compose.yaml
+MILVUS_SERVICES := etcd minio milvus attu api_server
 
-IMAGE_NAME=ai_api_server
-CONTAINER_NAME=ai_service
+.PHONY: up down logs stop
 
 build:
-	docker build -t $(IMAGE_NAME) .
+	docker-compose -f $(COMPOSE_FILE) build -d $(MILVUS_SERVICES)
 
 run:
-	docker run -d \
-		--name $(CONTAINER_NAME) \
-		--gpus all \
-		--env-file .env \
-		-e SERVICE_HOST=$(SERVICE_HOST) \
-		-e SERVICE_PORT=$(SERVICE_PORT) \
-		-p $(SERVICE_PORT):$(SERVICE_PORT) \
-		$(IMAGE_NAME)
-
-	@echo ""
-	@echo "AI server is running!"
-	@echo "Docs available at: http://$(SERVICE_HOST):$(SERVICE_PORT)/docs"
+	docker-compose -f $(COMPOSE_FILE) up -d $(MILVUS_SERVICES)
 
 stop:
-	docker stop $(CONTAINER_NAME) || true
-	docker rm $(CONTAINER_NAME) || true
+	docker-compose -f $(COMPOSE_FILE) down $(MILVUS_SERVICES)
 
 logs:
-	docker logs -f $(CONTAINER_NAME)
+	docker-compose -f $(COMPOSE_FILE) logs -f $(MILVUS_SERVICES)

@@ -1,0 +1,110 @@
+
+services:
+  # API Server
+  api_server:
+    container_name: ai_service-api_server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      SERVICE_HOST: 0.0.0.0 # Service host ip
+      SERVICE_PORT: 8003 # Service port
+    ports:
+      - "8003:8003"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    depends_on:
+      - milvus
+    networks:
+      - ai_service-network
+    volumes:
+      - ./logger/app.log:/app/logger/app.log     # mount log file
+
+  # VectorDB(milvus)
+  etcd:
+    container_name: ai_service-milvus-etcd
+    image: quay.io/coreos/etcd:v3.5.5
+    environment:
+      ETCD_AUTO_COMPACTION_MODE: revision
+      ETCD_AUTO_COMPACTION_RETENTION: "1000"
+      ETCD_QUOTA_BACKEND_BYTES: "4294967296"
+      ETCD_SNAPSHOT_COUNT: "50000"
+    command: >
+      etcd -advertise-client-urls http://etcd:2379
+           -listen-client-urls http://0.0.0.0:2379
+           -listen-peer-urls http://0.0.0.0:2380
+           -initial-advertise-peer-urls http://etcd:2380
+           -initial-cluster etcd=http://etcd:2380
+           -initial-cluster-state new
+           -name etcd
+    volumes:
+      - ./volumes/etcd:/etcd-data
+    networks:
+      - ai_service-network
+
+  minio:
+    container_name: ai_service-milvus-minio
+    image: minio/minio:RELEASE.2023-09-30T07-02-29Z
+    environment:
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+    command: server /minio_data --console-address ":9001"
+    volumes:
+      - ./volumes/minio:/minio_data
+    ports:
+      - "9001:9001"
+    networks:
+      - ai_service-network
+
+  milvus:
+    container_name: ai_service-milvus-standalone
+    image: milvusdb/milvus:v2.4.7
+    command: ["milvus", "run", "standalone"]
+    environment:
+      ETCD_ENDPOINTS: etcd:2379
+      MINIO_ADDRESS: minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_USE_SSL: "false"
+      DATA_NODE_DATA_PATH: /var/lib/milvus
+      MILVUS_LOG_LEVEL: info
+    volumes:
+      - ./volumes/milvus:/var/lib/milvus
+    ports:
+      - "19530:19530"  # gRPC
+      - "9091:9091"    # REST
+    depends_on:
+      - etcd
+      - minio
+    networks:
+      - ai_service-network
+
+  # Milvus UI (Attu)
+  attu:
+    container_name: ai_service-milvus-attu
+    image: zilliz/attu:v2.4.7
+    environment:
+      MILVUS_URL: milvus:19530
+    ports:
+      - "8000:3000"
+    depends_on:
+      - milvus
+    networks:
+      - ai_service-network
+
+volumes:
+  volumes_etcd:
+    driver: local
+  volumes_minio:
+    driver: local
+  volumes_milvus:
+    driver: local
+
+networks:
+  ai_service-network:
+    driver: bridge
