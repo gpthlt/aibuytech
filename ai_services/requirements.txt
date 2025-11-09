@@ -7,3 +7,5 @@ torch==2.9.0 --index-url https://download.pytorch.org/whl/cu126
 torchvision==0.24.0
 uvicorn==0.38.0
 python-multipart==0.0.20
+langchain_openai==1.0.2
+langchain-core==1.0.4
