@@ -17,7 +17,7 @@ uploads/*
 pnpm-lock.yaml
 zzz/
 
-infra/volumes/*
+ai_services/volumes/*
 ai_services/logger/app.log
 ai_services/model
 ai_services/**/__pycache__/
