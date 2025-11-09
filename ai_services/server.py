@@ -174,5 +174,4 @@ if __name__ == "__main__":
         "server:app",
         host=args.host,
         port=args.port,
-        reload=True
     )
