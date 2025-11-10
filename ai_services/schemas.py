@@ -16,11 +16,6 @@ class RetrievedRecord(BaseModel):
 class RetrieveResponse(BaseModel):
     results: List[RetrievedRecord]
 
-class RecordResponse(BaseModel):
-    image_id: str
-    metadata: Dict[str, Any]
-    embedding_preview: List[float] = Field(..., description="First 5 values of the embedding")
-
 class DeleteResponse(BaseModel):
     image_id: str
     status: str
@@ -57,7 +52,7 @@ class AspectAnalysis(BaseModel):
 
 class ComparisonResponse(BaseModel):
     product_summaries: Dict[str, List[AspectAnalysis]]
-    overall_comparison: str
+    overall_comparison: Dict[str, Any]
     satisfaction_rates: Dict[str, float]
 
 class ComparisonRequest(BaseModel):
