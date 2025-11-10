@@ -25,22 +25,29 @@ class LLMEngine:
         self.summary_prompt = ChatPromptTemplate.from_template(SUMMARY_PROMPT)
         self.analysis_prompt = ChatPromptTemplate.from_template(ANALYSIS_PROMPT)
         self.text2constraint = ChatPromptTemplate.from_template(TEXT2CONSTRAINT_PROMPT)
-        
+
         # Build LCEL-style chains
-        self.summarize_chain = self.summary_prompt | self.llm | StrOutputParser()
+        self.summarize_chain = self.summary_prompt | self.llm | JsonOutputParser()
         self.analyze_chain = self.analysis_prompt | self.llm | JsonOutputParser()
         self.text2constraint_chain = self.text2constraint | self.llm | JsonOutputParser()
 
     async def analyze_product(self, product: Product) -> Dict[str, Any]:
         """Analyze all reviews for a given product asynchronously."""
-        try: 
+        try:
             reviews_text = product.reviews
-            output = await self.analyze_chain.ainvoke({
-                "product_name": product.name,
-                "reviews": reviews_text
-            })
+            if not reviews_text:
+              output = {
+                "aspects": [],
+                "satisfaction_rate": 0,
+                "summary": "Không có đánh giá người dùng để phân tích."
+              }
+            else:
+              output = await self.analyze_chain.ainvoke({
+                  "product_name": product.name,
+                  "reviews": reviews_text
+              })
             return output
-        except Exception as e: 
+        except Exception as e:
             logger.error(f"Failed to analyze review because of {e}.")
 
     async def compare_products(self, analyzed_products: Dict[str, Dict[str, Any]]) -> str:
@@ -48,27 +55,26 @@ class LLMEngine:
         Compare multiple analyzed products (aspects + summaries)
         and return a high-level comparative summary.
         """
-        try: 
+        try:
             product_summaries = "\n\n".join(
                 [
                     f"{name}:\n{json.dumps([a.dict() for a in summary], indent=2)}"
                     for name, summary in analyzed_products.items()
                 ]
             )
-
             return await self.summarize_chain.ainvoke({
                 "product_summaries": product_summaries
             })
-        except Exception as e: 
+        except Exception as e:
             logger.error(f"Failed to compare products because of {e}.")
 
     async def extract_constraints_from_query(self, user_query: str) -> dict:
-        try: 
+        try:
             response = await self.text2constraint_chain.ainvoke({
                 "user_query": user_query
             })
             return response
-        except Exception as e: 
+        except Exception as e:
             logger.error(f"Failed to extract constraint from query because of {e}.")
 
 # Example usage
