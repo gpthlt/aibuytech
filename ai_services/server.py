@@ -5,8 +5,8 @@ import uvicorn
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Body
 
-from schemas import (UpsertResponse, RetrieveResponse,DeleteResponse, 
-                     ComparisonRequest, AspectAnalysis, 
+from schemas import (UpsertResponse, RetrieveResponse,DeleteResponse,
+                     ComparisonRequest, AspectAnalysis,
                      ComparisonResponse, ContextRequest, ProductConstraint)
 
 from utils.review_filter import filter_representative_reviews
@@ -112,7 +112,7 @@ async def delete_record(image_id: str):
     success = await vdb.delete(image_id)
     if not success:
         raise HTTPException(status_code=404, detail="Image ID not found")
-        
+
     return DeleteResponse(image_id=image_id, status="deleted")
 
 
@@ -130,14 +130,14 @@ async def compare_product(
         for product in request.products:
             filtered_reviews = filter_representative_reviews(product.reviews)
             if not filtered_reviews:
-                raise HTTPException(status_code=400, detail=f"No valid reviews found for {product.name}")
+                filtered_reviews = None
 
             product.reviews = filtered_reviews
             analysis = await llm.analyze_product(product)
-            product_summaries[product.id] = [
+            product_summaries[product.name] = [
                 AspectAnalysis(**a) for a in analysis["aspects"]
             ]
-            satisfaction_rates[product.id] = analysis["satisfaction_rate"]
+            satisfaction_rates[product.name] = analysis["satisfaction_rate"]
 
         overall_summary = await llm.compare_products(product_summaries)
 
