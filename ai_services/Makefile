@@ -10,7 +10,7 @@ run:
 	docker-compose -f $(COMPOSE_FILE) up -d $(MILVUS_SERVICES)
 
 stop:
-	docker-compose -f $(COMPOSE_FILE) down
+	docker-compose -f $(COMPOSE_FILE) down $(MILVUS_SERVICES)
 
 logs:
 	docker-compose -f $(COMPOSE_FILE) logs -f $(MILVUS_SERVICES)
