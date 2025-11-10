@@ -25,12 +25,42 @@ Output:
 
 
 SUMMARY_PROMPT = """
-So sánh các sản phẩm sau dựa trên cảm xúc theo khía cạnh và tóm tắt:
+Bạn là một trợ lý phân tích sản phẩm. Dưới đây là dữ liệu tóm tắt cảm xúc và khía cạnh của các sản phẩm:
 
 {product_summaries}
 
-Hãy tạo ra **một bản tóm tắt ngắn gọn bằng tiếng Việt**, thân thiện với người đọc, nêu rõ: ưu điểm, nhược điểm và sự khác biệt chính giữa các sản phẩm.
+Yêu cầu:
+1. Hãy tạo bản tổng hợp bằng **tiếng Việt**, ngắn gọn, dễ hiểu, phù hợp cho người đọc phổ thông.
+2. Với **mỗi sản phẩm**, hãy nêu rõ:
+   - "name": tên hoặc mã sản phẩm (ví dụ: "p1", "iPhone 15", v.v.)
+   - "pros": danh sách các ưu điểm nổi bật (dưới dạng list các chuỗi)
+   - "cons": danh sách các nhược điểm chính (dưới dạng list các chuỗi)
+3. Cuối cùng, tạo phần:
+   - "comparison_summary": đoạn văn tóm tắt so sánh tổng quan giữa các sản phẩm (nêu rõ khác biệt chính, sản phẩm nào nổi bật hơn ở điểm nào, sản phẩm nào yếu hơn,...)
+
+Đầu ra **bắt buộc phải ở định dạng JSON hợp lệ**, theo mẫu sau:
+
+```json
+{{
+  "products": [
+    {{
+      "name": "p1",
+      "pros": ["Ưu điểm 1", "Ưu điểm 2"],
+      "cons": ["Nhược điểm 1", "Nhược điểm 2"]
+    }},
+    {{
+      "name": "p2",
+      "pros": ["..."],
+      "cons": ["..."]
+    }}
+  ],
+  "comparison_summary": "Tóm tắt so sánh chung giữa các sản phẩm..."
+}}
+```
+
+Chỉ trả về JSON, không thêm lời giải thích hoặc ghi chú nào khác.
 """
+
 
 TEXT2QUERY_PROMPT = """
 Bạn là trợ lý mua sắm.
@@ -72,16 +102,16 @@ Ví dụ cấu trúc JSON:
 {{
     "category": "Laptop",       // loại sản phẩm
     "budget": 1500.0,           // nếu có, nếu không thì null
-    "expression": "More"        // trả về "More", "Less" tùy vào tin nhắn của người dùng về budget, nếu không thì null 
+    "expression": "More"        // trả về "More", "Less" tùy vào tin nhắn của người dùng về budget, nếu không thì null
 }}
 ```
 
-Ví dụ: 
+Ví dụ:
 Tin nhắn: Tôi muốn mua macbook air trên 10 triệu
-Output: 
+Output:
 {{
-    "category": "Laptop",       
-    "budget": 10000000.0,       
-    "expression": "More"       
+    "category": "Laptop",
+    "budget": 10000000.0,
+    "expression": "More"
 }}
 """
