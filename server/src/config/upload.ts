@@ -43,6 +43,16 @@ export const upload = multer({
   },
 });
 
+// Memory storage for image search (we need the buffer)
+const memoryStorage = multer.memoryStorage();
+export const uploadMemory = multer({
+  storage: memoryStorage,
+  fileFilter,
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB max file size
+  },
+});
+
 // Helper to delete file
 export const deleteFile = (filePath: string): void => {
   try {
