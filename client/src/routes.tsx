@@ -13,6 +13,7 @@ import ManageUsers from './pages/Admin/ManageUsers';
 import ManageOrders from './pages/Admin/ManageOrders';
 import ManageProducts from './pages/Admin/ManageProducts';
 import ManageReviews from './pages/Admin/ManageReviews';
+import Comparison from './pages/Comparison';
 import { useAuthStore } from './store/useAuthStore';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -33,6 +34,7 @@ function AppRoutes() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="products/:id" element={<ProductDetail />} />
+        <Route path="comparison" element={<Comparison />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route
