@@ -91,19 +91,11 @@ services:
     environment:
       MILVUS_URL: milvus:19530
     ports:
-      - "8000:3000"
+      - "8005:3000"
     depends_on:
       - milvus
     networks:
       - ai_service-network
-
-volumes:
-  volumes_etcd:
-    driver: local
-  volumes_minio:
-    driver: local
-  volumes_milvus:
-    driver: local
 
 networks:
   ai_service-network:
