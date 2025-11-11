@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import api from '../../lib/api';
+import api, { API_BASE_URL } from '../../lib/api';
 import Loading from '../../components/Loading';
 import toast from 'react-hot-toast';
 import ProductModal from './ProductModal';
@@ -190,7 +190,7 @@ function ManageProducts() {
                     <div className="product-info">
                       {product.images && product.images.length > 0 && (
                         <img 
-                          src={`http://api.aibuytech.store${product.images[0]}`}
+                          src={`${API_BASE_URL}${product.images[0]}`}
                           alt={product.name}
                           style={{ width: '50px', height: '50px', objectFit: 'cover', borderRadius: '4px', marginRight: '10px' }}
                         />
