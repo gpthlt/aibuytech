@@ -1,4 +1,15 @@
-import { Document, Packer, Paragraph, Table, TableCell, TableRow, TextRun, WidthType, AlignmentType } from 'docx';
+import {
+  Document,
+  Packer,
+  Paragraph,
+  Table,
+  TableCell,
+  TableRow,
+  TextRun,
+  WidthType,
+  AlignmentType,
+  VerticalAlign,
+} from 'docx';
 import { ComparisonResponse } from './aiService.js';
 
 export async function generateComparisonDocx(
@@ -16,21 +27,34 @@ export async function generateComparisonDocx(
   });
   const aspects = Array.from(allAspects);
 
+  // Standard cell formatting options
+  const standardCellOptions = {
+    verticalAlign: VerticalAlign.TOP,
+  };
+
+  // Helper function to create a consistent table cell
+  const createTableCell = (
+    content: string,
+    width: number,
+    alignment: (typeof AlignmentType)[keyof typeof AlignmentType] = AlignmentType.LEFT,
+    columnSpan?: number
+  ): TableCell => {
+    return new TableCell({
+      children: [new Paragraph({ text: content, alignment })],
+      width: { size: width, type: WidthType.PERCENTAGE },
+      columnSpan,
+      ...standardCellOptions,
+    });
+  };
+
   // Create table rows
   const rows: TableRow[] = [];
 
   // Header row
   const headerCells = [
-    new TableCell({
-      children: [new Paragraph({ text: 'Tiêu chí', alignment: AlignmentType.CENTER })],
-      width: { size: 20, type: WidthType.PERCENTAGE },
-    }),
-    ...productNames.map(
-      (name) =>
-        new TableCell({
-          children: [new Paragraph({ text: name, alignment: AlignmentType.CENTER })],
-          width: { size: 80 / productNames.length, type: WidthType.PERCENTAGE },
-        })
+    createTableCell('Tiêu chí', 20, AlignmentType.CENTER),
+    ...productNames.map((name) =>
+      createTableCell(name, 80 / productNames.length, AlignmentType.CENTER)
     ),
   ];
   rows.push(new TableRow({ children: headerCells }));
@@ -38,34 +62,22 @@ export async function generateComparisonDocx(
   // Aspect rows
   aspects.forEach((aspect) => {
     const cells = [
-      new TableCell({
-        children: [new Paragraph({ text: aspect })],
-        width: { size: 20, type: WidthType.PERCENTAGE },
-      }),
+      createTableCell(aspect, 20, AlignmentType.LEFT),
       ...productNames.map((name) => {
         const productSummary = product_summaries[name] || [];
         const aspectSummary = productSummary.find((s) => s.aspect === aspect);
 
         if (!aspectSummary) {
-          return new TableCell({
-            children: [new Paragraph({ text: '-' })],
-            width: { size: 80 / productNames.length, type: WidthType.PERCENTAGE },
-          });
+          return createTableCell('-', 80 / productNames.length, AlignmentType.LEFT);
         }
 
         const summaryText = aspectSummary.summary;
-        const quotes = aspectSummary.key_quotes.length > 0 
-          ? `\nQuotes: ${aspectSummary.key_quotes.map(q => `• ${q}`).join(' ')}`
-          : '';
+        const quotes =
+          aspectSummary.key_quotes.length > 0
+            ? `\nQuotes: ${aspectSummary.key_quotes.map((q) => `• ${q}`).join(' ')}`
+            : '';
 
-        return new TableCell({
-          children: [
-            new Paragraph({
-              text: summaryText + quotes,
-            }),
-          ],
-          width: { size: 80 / productNames.length, type: WidthType.PERCENTAGE },
-        });
+        return createTableCell(summaryText + quotes, 80 / productNames.length, AlignmentType.LEFT);
       }),
     ];
     rows.push(new TableRow({ children: cells }));
@@ -75,21 +87,12 @@ export async function generateComparisonDocx(
   rows.push(
     new TableRow({
       children: [
-        new TableCell({
-          children: [new Paragraph({ text: 'Ưu điểm', alignment: AlignmentType.CENTER })],
-          width: { size: 20, type: WidthType.PERCENTAGE },
-        }),
+        createTableCell('Ưu điểm', 20, AlignmentType.CENTER),
         ...productNames.map((name) => {
           const product = overall_comparison.products.find((p) => p.name === name);
           const pros = product?.pros || [];
-          return new TableCell({
-            children: [
-              new Paragraph({
-                text: pros.length > 0 ? pros.map((p) => `• ${p}`).join('\n') : '-',
-              }),
-            ],
-            width: { size: 80 / productNames.length, type: WidthType.PERCENTAGE },
-          });
+          const content = pros.length > 0 ? pros.map((p) => `• ${p}`).join('\n') : '-';
+          return createTableCell(content, 80 / productNames.length, AlignmentType.LEFT);
         }),
       ],
     })
@@ -98,21 +101,26 @@ export async function generateComparisonDocx(
   rows.push(
     new TableRow({
       children: [
-        new TableCell({
-          children: [new Paragraph({ text: 'Nhược điểm', alignment: AlignmentType.CENTER })],
-          width: { size: 20, type: WidthType.PERCENTAGE },
-        }),
+        createTableCell('Nhược điểm', 20, AlignmentType.CENTER),
         ...productNames.map((name) => {
           const product = overall_comparison.products.find((p) => p.name === name);
           const cons = product?.cons || [];
-          return new TableCell({
-            children: [
-              new Paragraph({
-                text: cons.length > 0 ? cons.map((c) => `• ${c}`).join('\n') : '-',
-              }),
-            ],
-            width: { size: 80 / productNames.length, type: WidthType.PERCENTAGE },
-          });
+          const content = cons.length > 0 ? cons.map((c) => `• ${c}`).join('\n') : '-';
+          return createTableCell(content, 80 / productNames.length, AlignmentType.LEFT);
+        }),
+      ],
+    })
+  );
+
+  // Satisfaction rates row
+  rows.push(
+    new TableRow({
+      children: [
+        createTableCell('Mức độ hài lòng', 20, AlignmentType.CENTER),
+        ...productNames.map((name) => {
+          const rate = satisfaction_rates[name];
+          const content = rate !== undefined ? `${rate.toFixed(1)} ⭐` : '-';
+          return createTableCell(content, 80 / productNames.length, AlignmentType.CENTER);
         }),
       ],
     })
@@ -120,15 +128,13 @@ export async function generateComparisonDocx(
 
   // Overall summary row
   const summaryCells = [
-    new TableCell({
-      children: [new Paragraph({ text: 'Nhận xét tổng quát', alignment: AlignmentType.CENTER })],
-      width: { size: 20, type: WidthType.PERCENTAGE },
-    }),
-    new TableCell({
-      children: [new Paragraph({ text: overall_comparison.comparison_summary })],
-      columnSpan: productNames.length,
-      width: { size: 80, type: WidthType.PERCENTAGE },
-    }),
+    createTableCell('Nhận xét tổng quát', 20, AlignmentType.CENTER),
+    createTableCell(
+      overall_comparison.comparison_summary,
+      80,
+      AlignmentType.LEFT,
+      productNames.length
+    ),
   ];
   rows.push(new TableRow({ children: summaryCells }));
 
@@ -156,4 +162,3 @@ export async function generateComparisonDocx(
   const buffer = await Packer.toBuffer(doc);
   return buffer;
 }
-
