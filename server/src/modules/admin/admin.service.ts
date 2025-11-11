@@ -1,9 +1,14 @@
+import path from 'path';
+import fs from 'fs';
+import { v4 as uuidv4 } from 'uuid';
 import { User } from '../../models/User.js';
 import { Product } from '../../models/Product.js';
 import { Order } from '../../models/Order.js';
 import { ApiError } from '../../utils/ApiResponse.js';
 import { paginate, PaginationOptions } from '../../utils/pagination.js';
 import { deleteFiles } from '../../config/upload.js';
+import { upsertImage } from '../../utils/aiService.js';
+import { logger } from '../../utils/logger.js';
 import type {
   GetUsersQuery,
   UpdateUserRoleBody,
@@ -116,6 +121,12 @@ export class AdminService {
     }
     
     const product = await Product.create(productData);
+    
+    // Embed images to AI service (Milvus) after product is created
+    if (images && images.length > 0) {
+      await this.embedProductImages(product._id.toString(), images);
+    }
+    
     return product;
   }
 
@@ -127,14 +138,28 @@ export class AdminService {
 
     // Handle image updates
     if (newImages !== undefined) {
-      // Delete old images that are not in newImages
-      if (product.images && product.images.length > 0) {
-        const imagesToDelete = product.images.filter(img => !newImages.includes(img));
-        if (imagesToDelete.length > 0) {
-          const oldImagePaths = imagesToDelete.map((img) => img.replace('/uploads/', 'uploads/'));
-          deleteFiles(oldImagePaths);
-        }
+      const oldImages = product.images || [];
+      
+      // Find newly added images (images in newImages but not in oldImages)
+      const addedImages = newImages.filter(img => !oldImages.includes(img));
+      
+      // Find removed images (images in oldImages but not in newImages)
+      const removedImages = oldImages.filter(img => !newImages.includes(img));
+      
+      // Delete removed image files from filesystem
+      if (removedImages.length > 0) {
+        const oldImagePaths = removedImages.map((img) => img.replace('/uploads/', 'uploads/'));
+        deleteFiles(oldImagePaths);
+        
+        // The old embeddings will remain but won't be matched since item_id won't match active products
+        logger.info(`Removed ${removedImages.length} image(s) from product ${productId}`);
       }
+      
+      // Embed newly added images to AI service
+      if (addedImages.length > 0) {
+        await this.embedProductImages(productId, addedImages);
+      }
+      
       data.images = newImages;
     }
 
@@ -472,5 +497,40 @@ export class AdminService {
     await product.save();
 
     return { message: 'Review deleted successfully' };
+  }
+
+  // ============================================
+  // Image Embedding Helper
+  // ============================================
+
+  /**
+   * Embed product images to AI service (Milvus)
+   * @param productId - The product ID to use as item_id in metadata
+   * @param imagePaths - Array of image paths (e.g., ['/uploads/products/image.jpg'])
+   */
+  private async embedProductImages(productId: string, imagePaths: string[]): Promise<void> {
+    for (const imagePath of imagePaths) {
+      try {
+        // Remove leading slash if present
+        const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
+        const fullImagePath = path.join(process.cwd(), cleanPath);
+        
+        if (!fs.existsSync(fullImagePath)) {
+          logger.warn(`Image file not found: ${fullImagePath}`);
+          continue;
+        }
+
+        // Generate UUID for image_id
+        const imageId = uuidv4();
+        const itemId = productId;
+        
+        // Embed image to AI service
+        await upsertImage(imageId, fullImagePath, itemId);
+        logger.info(`✓ Embedded image ${imageId} for product ${productId}`);
+      } catch (error) {
+        logger.error(`Failed to embed image ${imagePath} for product ${productId}:`, error);
+        // Continue with other images even if one fails
+      }
+    }
   }
 }
