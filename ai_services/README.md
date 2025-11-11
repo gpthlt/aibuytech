@@ -112,9 +112,9 @@ All endpoints are accessible under the base path:
 http://<host>:<port>/api/v1
 ```
 
-Example (default):  
+API Documents (default):
 ```
-http://localhost:8003/api/v1
+http://localhost:8003/api/v1/docs
 ```
 
 ---
