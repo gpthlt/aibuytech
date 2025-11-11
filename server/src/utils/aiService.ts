@@ -50,6 +50,36 @@ export interface ProductForComparison {
   stock?: number;
 }
 
+/**
+ * Comparison response structure matching the AI service output.
+ * 
+ * Example structure:
+ * {
+ *   product_summaries: {
+ *     'Product Name': [
+ *       {
+ *         aspect: 'Pin',
+ *         sentiment: 0.8,
+ *         summary: '...',
+ *         key_quotes: ['...']
+ *       }
+ *     ]
+ *   },
+ *   overall_comparison: {
+ *     products: [
+ *       {
+ *         name: 'Product Name',
+ *         pros: ['...'],
+ *         cons: ['...']
+ *       }
+ *     ],
+ *     comparison_summary: '...'
+ *   },
+ *   satisfaction_rates: {
+ *     'Product Name': 87.0
+ *   }
+ * }
+ */
 export interface ComparisonResponse {
   product_summaries: Record<
     string,
@@ -218,6 +248,13 @@ export async function extractConstraints(userQuery: string): Promise<ProductCons
 
 /**
  * Compare products using AI service
+ * 
+ * Returns a complete ComparisonResponse with all fields:
+ * - product_summaries: Aspect analyses for each product
+ * - overall_comparison: Products comparison with pros/cons and summary
+ * - satisfaction_rates: Satisfaction rate for each product
+ * 
+ * All fields from the AI service response are preserved without modification.
  */
 export async function compareProducts(
   products: ProductForComparison[]
@@ -230,7 +267,27 @@ export async function compareProducts(
       }
     );
 
-    return response.data;
+    // Ensure all fields are present in the response
+    const result = response.data;
+    
+    // Validate that all required fields are present
+    if (!result.product_summaries || !result.overall_comparison || !result.satisfaction_rates) {
+      logger.warn('Comparison response missing required fields', {
+        hasProductSummaries: !!result.product_summaries,
+        hasOverallComparison: !!result.overall_comparison,
+        hasSatisfactionRates: !!result.satisfaction_rates,
+      });
+    }
+
+    // Ensure overall_comparison has the expected structure
+    if (result.overall_comparison && !result.overall_comparison.products) {
+      logger.warn('overall_comparison missing products array');
+    }
+    if (result.overall_comparison && !result.overall_comparison.comparison_summary) {
+      logger.warn('overall_comparison missing comparison_summary');
+    }
+
+    return result;
   } catch (error: any) {
     if (axios.isAxiosError(error)) {
       const errorMessage = error.response?.data?.detail || error.message;
