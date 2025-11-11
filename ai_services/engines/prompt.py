@@ -4,9 +4,10 @@ Phân tích các đánh giá của người dùng cho sản phẩm **{product_na
 
 1. Xác định các khía cạnh quan trọng (pin, camera, hiệu năng, thiết kế, v.v.)
 2. Đánh giá cảm xúc của từng khía cạnh (-1 đến 1)
-3. Cung cấp 1-2 trích dẫn minh họa.
+3. Cung cấp 1-2 trích dẫn minh họa. Các câu trích dẫn nên được đến từ bình luận, đừng cố trích dẫn nếu không có thông tin.
 4. Viết tóm tắt ngắn gọn cho từng khía cạnh.
 5. Ước lượng mức độ hài lòng chung (0-100%), được tính bằng trung bình rating.
+6. Sẽ có những sản phẩm có mô tả không liên quan nhưng bình luận vẫn có thể nói rằng: "Sản phẩm đúng với mô tả". Hãy bỏ qua những bình luận này.
 
 Đánh giá:
 {reviews}
