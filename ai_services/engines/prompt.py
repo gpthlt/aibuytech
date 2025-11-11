@@ -97,6 +97,8 @@ Hãy trả về **một đối tượng JSON hợp lệ** với:
 - Không dùng định dạng markdown
 - Sử dụng kiểu dữ liệu chuẩn (string, số, mảng)
 
+Đây là danh sách các category: "Laptop", "Smartphone", "Tablet", "Accessories", "Gaming".
+
 Ví dụ cấu trúc JSON:
 ```json
 {{
