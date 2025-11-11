@@ -43,7 +43,7 @@ export const upload = multer({
   },
 });
 
-// Memory storage for image search (we need the buffer)
+// Memory storage for image search
 const memoryStorage = multer.memoryStorage();
 export const uploadMemory = multer({
   storage: memoryStorage,
