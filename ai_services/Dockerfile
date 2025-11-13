@@ -25,6 +25,11 @@ RUN python3 -m pip install --no-cache-dir -r requirements.txt
 # Copy project
 COPY . .
 
+# Download model files during build
+RUN echo "Downloading model files from Google Drive..." && \
+    python3 download.py && \
+    echo "Model download complete"
+
 EXPOSE 8003
 
 CMD ["sh", "-c", "python3 server.py --host ${SERVICE_HOST:-0.0.0.0} --port ${SERVICE_PORT:-8003}"]
