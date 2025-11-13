@@ -19,7 +19,7 @@ class ImageEmbedder:
         self,
         model_name_or_path: str,
         device: Optional[str] = None, #"cuda:0", "cpu"
-        device_map: Optional[Union[str, dict]] = "auto",
+        device_map: Optional[Union[str, dict]] = None,
         torch_dtype: Optional[torch.dtype] = None,
     ):
         self.model_id = model_name_or_path

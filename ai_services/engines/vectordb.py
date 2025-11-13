@@ -14,14 +14,14 @@ class VectorDB:
     def __init__(
         self,
         dim: int,
-        milvus_host: str = "localhost",
-        milvus_port: str = "19530",
         collection_name: str = "images",
         metric: str = "cosine",
         create_if_missing: bool = True,
         index_params: Optional[Dict[str, Any]] = None,
-        connect_uri: Optional[str] = None,
-        timeout: Optional[float] = 30.0,
+        timeout: Optional[float] = 10.0,
+        *,
+        connect_uri: str,
+        milvus_token: str,
     ) -> None:
         self.dim = int(dim)
         self.collection_name = collection_name
@@ -30,11 +30,9 @@ class VectorDB:
         self._milvus_metric = "COSINE" if self.metric == "cosine" else "L2"
 
         try:
-            if connect_uri:
-                connections.connect(uri=connect_uri, timeout=timeout)
-            else:
-                connections.connect(host=milvus_host, port=milvus_port, timeout=timeout)
-            logger.info(f"Connected to Milvus at {milvus_host}:{milvus_port}")
+            connections.connect(uri=connect_uri, timeout=timeout, token=milvus_token)
+            logger.info(f"Connected to Milvus via URI")
+
         except Exception as e:
             logger.error(f"Failed to connect to Milvus: {e}")
             raise
@@ -270,10 +268,24 @@ class VectorDB:
             raise
 
 if __name__ == "__main__":
+    import os
+    from dotenv import load_dotenv
+    
+    vector_dim = int(os.environ.get("VECTOR_DIM"))
+    collection_name = os.environ.get("COLLECTION_NAME")
+    uri = os.environ.get("MILVUS_URI")
+    token = os.environ.get("ZILLIZ_TOKEN")
 
-    vdb = VectorDB(dim=128, milvus_host="localhost", milvus_port="19530", collection_name="images", metric="cosine")
+    load_dotenv(dotenv_path=".env")
+    vdb = VectorDB(
+        dim=vector_dim,
+        connect_uri=uri,
+        collection_name=collection_name,
+        milvus_token=token
+    )
 
-    cat = np.random.rand(128)
+
+    cat = np.random.rand(1024)
     asyncio.run(vdb.upsert_vector("img_1", cat, metadata={"id": "cat_1234"}))
     results = asyncio.run(vdb.retrieve_similar(cat, top_k=3))
     print(results)

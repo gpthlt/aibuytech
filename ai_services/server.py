@@ -18,8 +18,8 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path=".env")
 
 vector_dim = int(os.environ.get("VECTOR_DIM"))
-milvus_host = os.environ.get("MILVUS_HOST")
-milvus_port = os.environ.get("MILVUS_PORT")
+milvus_uri = os.environ.get("MILVUS_URI")
+milvus_token = os.environ.get("ZILLIZ_TOKEN")
 collection_name = os.environ.get("COLLECTION_NAME")
 openai_api_key = os.environ.get("OPENAI_API_KEY")
 
@@ -30,7 +30,12 @@ device = os.environ.get("DEVICE")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global vdb, embedder, llm
-    vdb = VectorDB(dim=vector_dim, milvus_host=milvus_host, milvus_port=milvus_port, collection_name=collection_name)
+    vdb = VectorDB(
+        dim=vector_dim,
+        connect_uri=milvus_uri,
+        collection_name=collection_name,
+        milvus_token=milvus_token
+    )
     embedder = ImageEmbedder(model_name_or_path=model_path, device=device)
     llm = LLMEngine(openai_api_key=openai_api_key)
     yield
