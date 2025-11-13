@@ -1,5 +1,4 @@
 # Nixpacks configuration for Railway - AI Service (Python FastAPI)
-
 [phases.setup]
 nixPkgs = ["python312", "pip"]
 
