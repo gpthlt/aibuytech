@@ -12,5 +12,5 @@ cmds = [
 cmds = ["echo 'AI Service build complete'"]
 
 [start]
-cmd = "python3 server.py"
+cmd = "python3 download.py && python3 server.py"
 
