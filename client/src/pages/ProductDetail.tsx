@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../lib/api';
+import api, { API_BASE_URL } from '../lib/api';
 import { useCartStore } from '../store/useCartStore';
 import { useAuthStore } from '../store/useAuthStore';
 import Loading from '../components/Loading';
@@ -87,9 +87,9 @@ function ProductDetail() {
   const getProductImages = () => {
     const images: string[] = [];
     if (product?.images && product.images.length > 0) {
-      product.images.forEach(img => images.push(`http://api.aibuytech.store${img}`));
+      product.images.forEach(img => images.push(`${API_BASE_URL}${img}`));
     } else if (product?.imageUrl) {
-      images.push(`http://api.aibuytech.store${product.imageUrl}`);
+      images.push(`${API_BASE_URL}${product.imageUrl}`);
     } else {
       images.push('/placeholder.jpg');
     }

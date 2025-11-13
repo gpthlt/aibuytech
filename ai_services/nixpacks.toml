@@ -1,0 +1,16 @@
+# Nixpacks configuration for Railway - AI Service (Python FastAPI)
+[phases.setup]
+nixPkgs = ["python312"]
+
+[phases.install]
+cmds = [
+  "python3 -m pip install --upgrade pip",
+  "python3 -m pip install -r requirements.txt"
+]
+
+[phases.build]
+cmds = ["echo 'AI Service build complete'"]
+
+[start]
+cmd = "python download.py && python server.py"
+

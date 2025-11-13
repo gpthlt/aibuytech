@@ -32,21 +32,71 @@
 
 .filters {
   display: flex;
-  gap: 2rem;
+  flex-direction: column;
+  gap: 1.5rem;
   margin-bottom: 2rem;
-  flex-wrap: wrap;
-  align-items: center;
   background: white;
   padding: 1.5rem;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.search-mode-toggle {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 1rem;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  background: white;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #4a5568;
+}
+
+.mode-btn:hover {
+  border-color: #667eea;
+  background: #f7fafc;
+}
+
+.mode-btn.active {
+  border-color: #667eea;
+  background: #667eea;
+  color: white;
+}
+
+.filters-row {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .search-form {
   display: flex;
   gap: 1rem;
-  flex: 1;
+  flex: 0 0 auto;
   min-width: 300px;
+  align-items: flex-start;
+}
+
+.search-form .btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+  width: 140px;
+  min-width: 140px;
+  max-width: 140px;
 }
 
 .search-input {
@@ -56,6 +106,7 @@
   border-radius: 8px;
   font-size: 1rem;
   transition: border-color 0.2s;
+  min-width: 0;
 }
 
 .search-input:focus {
@@ -63,10 +114,84 @@
   border-color: #667eea;
 }
 
+.image-search-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+  align-items: flex-start;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-input-label {
+  display: inline-block;
+  padding: 0.75rem 1rem;
+  border: 2px dashed #cbd5e0;
+  border-radius: 8px;
+  background: #f7fafc;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+  color: #4a5568;
+}
+
+.file-input-label:hover {
+  border-color: #667eea;
+  background: #edf2f7;
+  color: #667eea;
+}
+
+.image-preview-container {
+  position: relative;
+  width: 100%;
+  max-width: 200px;
+  margin: 0;
+  align-self: flex-start;
+}
+
+.image-preview {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  object-fit: cover;
+}
+
+.clear-image-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: white;
+  border: 2px solid white;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.clear-image-btn:hover {
+  background: #dc2626;
+}
+
 .sort-controls {
   display: flex;
   gap: 1rem;
   align-items: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  margin-right: 0;
 }
 
 .sort-controls label {

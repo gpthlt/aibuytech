@@ -1,12 +1,14 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { useCartStore } from '../store/useCartStore';
+import { useComparisonStore } from '../store/useComparisonStore';
 import './Header.css';
 
 function Header() {
   const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuthStore();
   const { itemCount } = useCartStore();
+  const { products: comparisonProducts } = useComparisonStore();
 
   const handleLogout = () => {
     logout();
@@ -28,6 +30,12 @@ function Header() {
             </Link>
             <Link to="/products" className="nav-link">
               Sản phẩm
+            </Link>
+            <Link to="/comparison" className="nav-link comparison-link">
+              <span>So sánh</span>
+              {comparisonProducts.length > 0 && (
+                <span className="comparison-badge">{comparisonProducts.length}</span>
+              )}
             </Link>
             {isAuthenticated && (
               <>

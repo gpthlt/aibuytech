@@ -53,6 +53,9 @@
   font-weight: 500;
   transition: color 0.2s;
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
 }
 
 .nav-link:hover {
@@ -79,6 +82,30 @@
   display: flex;
   align-items: center;
   gap: 0.25rem;
+}
+
+.comparison-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  vertical-align: middle;
+}
+
+.comparison-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #667eea;
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .admin-link {

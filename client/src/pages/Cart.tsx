@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
-import api from '../lib/api';
+import api, { API_BASE_URL } from '../lib/api';
 import toast from 'react-hot-toast';
 import './Cart.css';
 
@@ -31,10 +31,10 @@ function Cart() {
   // Get product image URL
   const getProductImage = (product: CartItem['product']) => {
     if (product.images && product.images.length > 0) {
-      return `http://api.aibuytech.store${product.images[0]}`;
+      return `${API_BASE_URL}${product.images[0]}`;
     }
     if (product.imageUrl) {
-      return `http://api.aibuytech.store${product.imageUrl}`;
+      return `${API_BASE_URL}${product.imageUrl}`;
     }
     return '/placeholder.png';
   };

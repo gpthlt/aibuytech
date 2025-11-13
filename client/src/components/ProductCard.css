@@ -11,6 +11,15 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  cursor: pointer;
+}
+
+.product-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .product-card:hover {
@@ -69,6 +78,19 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+  position: relative;
+}
+
+.product-info::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 2.5rem);
+  max-width: 100%;
+  height: 1px;
+  background: #e2e8f0;
 }
 
 .product-category {
@@ -100,17 +122,45 @@
 
 .product-footer {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
   margin-top: auto;
-  padding-top: 1rem;
-  border-top: 1px solid #e2e8f0;
+  padding: 1rem 1.25rem;
+  gap: 1rem;
+  position: relative;
+}
+
+.product-footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 2.5rem);
+  max-width: 100%;
+  height: 1px;
+  background: #e2e8f0;
 }
 
 .product-price {
   font-size: 1.25rem;
   font-weight: 700;
   color: #667eea;
+  text-align: center;
+}
+
+.product-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.product-actions .btn {
+  white-space: nowrap;
+  flex: 1;
+}
+
+.product-actions .btn.active {
+  opacity: 0.8;
 }
 
 .btn-sm {

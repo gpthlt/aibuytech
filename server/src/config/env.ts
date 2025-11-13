@@ -23,6 +23,7 @@ const envSchema = z.object({
   RATE_LIMIT_WINDOW_MS: z.string().transform(Number).default('900000'),
   RATE_LIMIT_MAX_REQUESTS: z.string().transform(Number).default('100'),
   PAYMENT_WEBHOOK_SECRET: z.string(),
+  AI_SERVICE_URL: z.string().url().default('http://localhost:8003'),
 });
 
 const envVars = envSchema.parse(process.env);
@@ -38,8 +39,8 @@ export const config = {
     refreshExpiresIn: envVars.JWT_REFRESH_EXPIRES_IN,
   },
   clientUrl: envVars.CLIENT_URL,
-  allowedOrigins: envVars.ALLOWED_ORIGINS 
-    ? envVars.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
+  allowedOrigins: envVars.ALLOWED_ORIGINS
+    ? envVars.ALLOWED_ORIGINS.split(',').map((origin) => origin.trim())
     : [envVars.CLIENT_URL],
   cloudinary: {
     enabled: envVars.CLOUDINARY_ENABLED,
@@ -53,5 +54,8 @@ export const config = {
   },
   payment: {
     webhookSecret: envVars.PAYMENT_WEBHOOK_SECRET,
+  },
+  aiService: {
+    url: envVars.AI_SERVICE_URL,
   },
 } as const;

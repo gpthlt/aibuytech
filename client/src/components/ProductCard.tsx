@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { API_BASE_URL } from '../lib/api';
+import { useComparisonStore } from '../store/useComparisonStore';
 import './ProductCard.css';
 
 interface ProductCardProps {
@@ -17,6 +19,9 @@ interface ProductCardProps {
 }
 
 function ProductCard({ product }: ProductCardProps) {
+  const { addProduct, removeProduct, isInComparison, canAdd } = useComparisonStore();
+  const inComparison = isInComparison(product._id);
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('vi-VN', {
       style: 'currency',
@@ -24,60 +29,86 @@ function ProductCard({ product }: ProductCardProps) {
     }).format(price);
   };
 
+  const handleCompareClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (inComparison) {
+      removeProduct(product._id);
+    } else {
+      if (canAdd()) {
+        addProduct(product);
+      } else {
+        alert('Bạn chỉ có thể so sánh tối đa 4 sản phẩm');
+      }
+    }
+  };
+
   // Get first image from images array or fallback to imageUrl or placeholder
   const getProductImage = () => {
     if (product.images && product.images.length > 0) {
-      return `http://api.aibuytech.store${product.images[0]}`;
+      return `${API_BASE_URL}${product.images[0]}`;
     }
     if (product.imageUrl) {
-      return `http://api.aibuytech.store${product.imageUrl}`;
+      return `${API_BASE_URL}${product.imageUrl}`;
     }
     return '/placeholder.jpg';
   };
 
   return (
-    <Link to={`/products/${product._id}`} className="product-card">
-      <div className="product-image-wrapper">
-        <img
-          src={getProductImage()}
-          alt={product.name}
-          className="product-image"
-        />
-        {product.stock === 0 && (
-          <div className="out-of-stock-badge">Hết hàng</div>
-        )}
-        {product.stock > 0 && product.stock < 5 && (
-          <div className="low-stock-badge">Còn {product.stock} sản phẩm</div>
-        )}
-      </div>
+    <div className="product-card">
+      <Link to={`/products/${product._id}`} className="product-card-link">
+        <div className="product-image-wrapper">
+          <img
+            src={getProductImage()}
+            alt={product.name}
+            className="product-image"
+          />
+          {product.stock === 0 && (
+            <div className="out-of-stock-badge">Hết hàng</div>
+          )}
+          {product.stock > 0 && product.stock < 5 && (
+            <div className="low-stock-badge">Còn {product.stock} sản phẩm</div>
+          )}
+        </div>
 
-      <div className="product-info">
-        {product.category && (
-          <span className="product-category">{product.category.name}</span>
-        )}
-        <h3 className="product-name">{product.name}</h3>
-        {product.description && (
-          <p className="product-description">
-            {product.description.length > 100
-              ? product.description.substring(0, 100) + '...'
-              : product.description}
-          </p>
-        )}
-        <div className="product-footer">
-          <span className="product-price">{formatPrice(product.price)}</span>
-          <button
+        <div className="product-info">
+          {product.category && (
+            <span className="product-category">{product.category.name}</span>
+          )}
+          <h3 className="product-name">{product.name}</h3>
+          {product.description && (
+            <p className="product-description">
+              {product.description.length > 100
+                ? product.description.substring(0, 100) + '...'
+                : product.description}
+            </p>
+          )}
+        </div>
+      </Link>
+      <div className="product-footer">
+        <span className="product-price">{formatPrice(product.price)}</span>
+        <div className="product-actions">
+          <Link
+            to={`/products/${product._id}`}
             className="btn btn-primary btn-sm"
             onClick={(e) => {
-              e.preventDefault();
-              // Add to cart logic will be handled in ProductDetail
+              if (product.stock === 0) {
+                e.preventDefault();
+              }
             }}
-            disabled={product.stock === 0}
           >
             {product.stock === 0 ? 'Hết hàng' : 'Xem chi tiết'}
+          </Link>
+          <button
+            className={`btn btn-primary btn-sm ${inComparison ? 'active' : ''}`}
+            onClick={handleCompareClick}
+            title={inComparison ? 'Bỏ so sánh' : 'Thêm vào so sánh'}
+          >
+            {inComparison ? '✓ So sánh' : 'So sánh'}
           </button>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }
 

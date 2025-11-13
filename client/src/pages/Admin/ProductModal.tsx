@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import api from '../../lib/api';
+import api, { API_BASE_URL } from '../../lib/api';
 import toast from 'react-hot-toast';
 import './ProductModal.css';
 
@@ -47,7 +47,7 @@ function ProductModal({ product, onClose, onSuccess }: ProductModalProps) {
     
     // Load existing images as previews
     if (product?.images && product.images.length > 0) {
-      const fullImageUrls = product.images.map(img => `http://api.aibuytech.store${img}`);
+      const fullImageUrls = product.images.map(img => `${API_BASE_URL}${img}`);
       setExistingImages(product.images); // Store original paths
       setImagePreviews(fullImageUrls); // Display full URLs
     }
@@ -106,7 +106,7 @@ function ProductModal({ product, onClose, onSuccess }: ProductModalProps) {
     const newPreviews = validFiles.map((file) => URL.createObjectURL(file));
     
     // Combine existing images with new previews
-    const existingFullUrls = existingImages.map(img => `http://api.aibuytech.store${img}`);
+    const existingFullUrls = existingImages.map(img => `${API_BASE_URL}${img}`);
     setImagePreviews([...existingFullUrls, ...newPreviews]);
   };
 
