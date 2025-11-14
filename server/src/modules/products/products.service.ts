@@ -99,8 +99,13 @@ export class ProductsService {
       const aiResults = await retrieveSimilarImagesFromBuffer(imageBuffer, topK);
 
       // Group results by item_id and keep the highest similarity for each product
+      // Filter out results with similarity below threshold (0.4) to prevent showing unrelated products
+      const SIMILARITY_THRESHOLD = 0.4;
       const itemSimilarityMap = new Map<string, number>();
       for (const result of aiResults.results) {
+        // Skip results below the similarity threshold
+        if (result.similarity < SIMILARITY_THRESHOLD) continue;
+
         const itemId = result.metadata.item_id;
         if (!itemId) continue;
 
@@ -133,11 +138,13 @@ export class ProductsService {
       }).populate('category', 'name slug');
 
       // Map products with their highest similarity scores, sorted by similarity (descending)
+      // Filter out products with similarity below threshold
       const productsWithSimilarity = products
         .map((product) => {
           const similarity = itemSimilarityMap.get(product._id.toString()) || 0;
           return { ...product.toObject(), similarity };
         })
+        .filter((product) => product.similarity >= SIMILARITY_THRESHOLD)
         .sort((a, b) => b.similarity - a.similarity);
 
       return createPaginationResult(productsWithSimilarity, productsWithSimilarity.length, 1, topK);
